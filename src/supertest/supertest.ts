@@ -84,8 +84,8 @@ function getOperationsPathAndMethod<Paths extends PathsTemplate, Operations exte
   return result as Record<OperationsNames<Operations>, { path: keyof Paths; method: Methods }>;
 }
 
-export async function requestSender<T extends { operations: OperationsTemplate; paths: PathsTemplate }>(
-  openapiFilePath: string,
+export async function requestSender<T extends { operations: OperationsTemplate; paths: PathsTemplate } = never>(
+  openapiFilePath: T extends never ? never : string,
   app: express.Application
 ): Promise<RequestSenderObj<T['paths'], T['operations']>> {
   const fileContent = readFileSync(openapiFilePath, 'utf-8');
@@ -93,7 +93,6 @@ export async function requestSender<T extends { operations: OperationsTemplate; 
   const derefed = await normalized.deref();
   const operationsPathAndMethod = getOperationsPathAndMethod(derefed);
 
-  // const openapi = await parse(fileContent);
   const returnObj = {
     // eslint-disable-next-line @typescript-eslint/promise-function-async
     sendRequest: <Path extends keyof T['paths'], Method extends keyof T['paths'][Path]>(options: PathRequestOptions<T['paths'], Path, Method>) =>

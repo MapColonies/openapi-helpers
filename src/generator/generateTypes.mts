@@ -9,7 +9,7 @@ const ARGS_SLICE = 2;
 const {
   values: { format: shouldFormat },
   positionals,
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
 } = parseArgs({
   args: process.argv.slice(ARGS_SLICE),
   options: {
@@ -18,11 +18,11 @@ const {
   allowPositionals: true,
 });
 
-const [openapiPath, destinationPath] = positionals as string[];
+const [openapiPath, destinationPath] = positionals;
 
 const ESLINT_DISABLE = '/* eslint-disable */\n';
 
-const ast = await openapiTS(new URL(openapiPath, import.meta.url));
+const ast = await openapiTS(await fs.readFile(openapiPath, 'utf-8'), { exportType: true });
 
 let content = ESLINT_DISABLE + astToString(ast);
 
