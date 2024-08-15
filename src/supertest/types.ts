@@ -38,9 +38,18 @@ export type QueryParamsObj<T> = T extends { parameters: { query?: NonNullable<an
       : { queryParams: T['parameters']['query'] }
   : { queryParams?: Record<string, string> };
 
+// export type RequestBodyObj<T> = T extends { requestBody: { content: any } }
+//   ? { requestBody: Pick<T['requestBody']['content']['application/json'], WritableKeys<T['requestBody']['content']['application/json']>> }
+//   : { requestBody?: any };
+export type A<T extends {content: any} | undefined> = T extends {content: any} ? Pick<T['content']['application/json'], WritableKeys<T['content']['application/json']>> : undefined;
+
 export type RequestBodyObj<T> = T extends { requestBody: { content: any } }
   ? { requestBody: Pick<T['requestBody']['content']['application/json'], WritableKeys<T['requestBody']['content']['application/json']>> }
-  : { requestBody?: any };
+  : T extends { requestBody?: undefined }
+    ? { requestBody?: any }
+    : T extends { requestBody?: { content: any } }
+      ? {requestBody? :A<T['requestBody']>}
+      : { requestBody?: any };
 
 export type PathRequestOptions<Paths extends PathsTemplate, Path extends keyof Paths, Method extends keyof Paths[Path]> = {
   path: Path;

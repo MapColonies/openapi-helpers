@@ -19,7 +19,7 @@
     "test": "tsc --project tsconfig.test.json --noEmit && jest --config=./tests/configurations/jest.config.js",
     "prebuild": "npm run clean",
     "build": "tsc --project tsconfig.build.json",
-    "start": "npm run build && cd dist && node ./index.js",
+    "generate:test:types": "npm run build && node dist/generator/generateTypes.mjs tests/supertest/openapi3.yaml tests/supertest/types.d.ts",
     "clean": "rimraf dist",
     "prepublish": "npm run build"
   },

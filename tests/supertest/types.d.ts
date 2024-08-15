@@ -39,9 +39,9 @@ export type paths = {
             path?: never;
             cookie?: never;
         };
-        get: operations["requestWithOptionalQueryParameters"];
+        get?: never;
         put?: never;
-        post?: never;
+        post: operations["requestWithOptionalQueryParameters"];
         delete?: never;
         options?: never;
         head?: never;
@@ -146,7 +146,9 @@ export type paths = {
     };
     "/endpoint-with-multiple-methods": {
         parameters: {
-            query?: never;
+            query?: {
+                test?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -229,10 +231,16 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody?: {
+            content: {
+                "application/json": {
+                    propertyName?: string;
+                };
+            };
+        };
         responses: {
             /** @description OK */
-            200: {
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -317,7 +325,9 @@ export interface operations {
     requestWithHeaders: {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                name: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -382,7 +392,7 @@ export interface operations {
         };
         responses: {
             /** @description OK */
-            200: {
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -397,7 +407,9 @@ export interface operations {
     };
     endpointWithMultipleMethodsGet: {
         parameters: {
-            query?: never;
+            query?: {
+                test?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -420,7 +432,9 @@ export interface operations {
     };
     endpointWithMultipleMethodsPost: {
         parameters: {
-            query?: never;
+            query?: {
+                test?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -428,7 +442,7 @@ export interface operations {
         requestBody?: never;
         responses: {
             /** @description OK */
-            200: {
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };

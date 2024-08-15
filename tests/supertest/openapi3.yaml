@@ -42,7 +42,7 @@ paths:
                     type: string
                     example: Hello, World!
   /request-with-optional-query-parameters:
-    get:
+    post:
       operationId: requestWithOptionalQueryParameters
       parameters:
         - name: name
@@ -50,8 +50,16 @@ paths:
           required: false
           schema:
             type: string
+      requestBody: 
+        content: 
+          application/json:
+            schema: 
+              type: object
+              properties: 
+                propertyName: 
+                  type: string 
       responses:
-        '200':
+        '201':
           description: OK
           content:
             application/json:
@@ -115,7 +123,12 @@ paths:
   /request-with-headers:
     get:
       operationId: requestWithHeaders
-
+      parameters:
+        - name: name
+          in: header
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: OK
@@ -170,7 +183,7 @@ paths:
                 message:
                   type: string
       responses:
-        '200':
+        '201':
           description: OK
           content:
             application/json:
@@ -181,6 +194,11 @@ paths:
                     type: string
                     example: Hello, World!
   /endpoint-with-multiple-methods:
+    parameters: 
+      - name: test
+        in: query
+        schema: 
+          type: string
     get:
       operationId: endpointWithMultipleMethodsGet
       responses:
@@ -197,7 +215,7 @@ paths:
     post:
       operationId: endpointWithMultipleMethodsPost
       responses:
-        '200':
+        '201':
           description: OK
           content:
             application/json:
