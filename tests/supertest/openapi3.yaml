@@ -50,14 +50,14 @@ paths:
           required: false
           schema:
             type: string
-      requestBody: 
-        content: 
+      requestBody:
+        content:
           application/json:
-            schema: 
+            schema:
               type: object
-              properties: 
-                propertyName: 
-                  type: string 
+              properties:
+                propertyName:
+                  type: string
       responses:
         '201':
           description: OK
@@ -141,7 +141,7 @@ paths:
                     type: string
                     example: Hello, World!
   /request-with-all/{name}:
-    get:
+    post:
       operationId: requestWithAll
       parameters:
         - name: name
@@ -160,7 +160,7 @@ paths:
           schema:
             type: number
       responses:
-        '200':
+        '201':
           description: OK
           content:
             application/json:
@@ -194,10 +194,10 @@ paths:
                     type: string
                     example: Hello, World!
   /endpoint-with-multiple-methods:
-    parameters: 
+    parameters:
       - name: test
         in: query
-        schema: 
+        schema:
           type: string
     get:
       operationId: endpointWithMultipleMethodsGet
@@ -217,6 +217,46 @@ paths:
       responses:
         '201':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Hello, World!
+  /multiple-status-codes:
+    get:
+      operationId: multipleStatusCodes
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Hello, World!
+                  number:
+                    type: number
+                    example: 42
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Hello, World!
+                  type:
+                    type: string
+                    example: test
+        '400':
+          description: Bad Request
           content:
             application/json:
               schema:

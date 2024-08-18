@@ -119,9 +119,9 @@ export type paths = {
             path?: never;
             cookie?: never;
         };
-        get: operations["requestWithAll"];
+        get?: never;
         put?: never;
-        post?: never;
+        post: operations["requestWithAll"];
         delete?: never;
         options?: never;
         head?: never;
@@ -156,6 +156,22 @@ export type paths = {
         get: operations["endpointWithMultipleMethodsGet"];
         put?: never;
         post: operations["endpointWithMultipleMethodsPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/multiple-status-codes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["multipleStatusCodes"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -363,7 +379,7 @@ export interface operations {
         requestBody?: never;
         responses: {
             /** @description OK */
-            200: {
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -443,6 +459,57 @@ export interface operations {
         responses: {
             /** @description OK */
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Hello, World! */
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    multipleStatusCodes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Hello, World! */
+                        message?: string;
+                        /** @example 42 */
+                        number?: number;
+                    };
+                };
+            };
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Hello, World! */
+                        message?: string;
+                        /** @example test */
+                        type?: string;
+                    };
+                };
+            };
+            /** @description Bad Request */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };

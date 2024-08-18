@@ -1,6 +1,8 @@
+/* eslint-disable import/exports-last */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { OptionalKeys, RequiredKeys, WritableKeys } from 'ts-essentials';
+import type { OptionalKeys, Prettify, RequiredKeys, WritableKeys } from 'ts-essentials';
 import type * as supertest from 'supertest';
+import { paths } from '../../tests/supertest/types';
 
 export type PathsTemplate = Record<
   string,
@@ -30,7 +32,19 @@ export type OperationsTemplate = Record<string, any>;
 
 export type Methods = 'get' | 'post' | 'put' | 'delete' | 'patch' | 'head' | 'options' | 'trace';
 
-export type HasResponse<T> = T extends { responses: { ['200']: any } } ? T['responses']['200']['content']['application/json'] : undefined;
+type HasContent<T> = [T] extends [{ content: any }] ? T['content']['application/json'] : never;
+
+type ResponseObjectToFlat<T> = T extends { responses: any }
+  ? {
+      [res in keyof T['responses']]: { status: res; body: HasContent<T['responses'][res]> };
+    }[keyof T['responses']]
+  : never;
+
+type C = Prettify<ResponseObjectToFlat<paths['/multiple-status-codes']['get']>>;
+
+type B<T> = T extends { responses: any } ? { [res in keyof T['responses']]: HasContent<T['responses'][res]> } : undefined;
+
+// export type HasResponse<T> = T extends { responses: { ['200']: any } } ? T['responses']['200']['content']['application/json'] : undefined;
 export type PathParamsObj<T> = T extends { parameters: { path: NonNullable<any> } }
   ? { pathParams: T['parameters']['path'] }
   : { pathParams?: undefined };
@@ -67,9 +81,10 @@ export type PathRequestOptions<Paths extends PathsTemplate, Path extends keyof P
   Headers;
 
 export type PathRequestReturn<Paths extends PathsTemplate, Path extends keyof Paths, Method extends keyof Paths[Path]> = Promise<
-  {
-    body: HasResponse<Paths[Path][Method]>;
-  } & Omit<Awaited<supertest.Test>, 'body'>
+  // {
+  //   body: HasResponse<Paths[Path][Method]>;
+  // }
+  Omit<Awaited<supertest.Test>, 'body'>
 >;
 
 export type OperationsNames<Operations extends OperationsTemplate> = keyof Operations;
@@ -82,9 +97,10 @@ export type OperationRequestOptions<Operations extends OperationsTemplate, Opera
   Headers;
 
 export type OperationRequestReturn<Operations extends OperationsTemplate, Operation extends OperationsNames<Operations>> = Promise<
-  {
-    body: HasResponse<Operations[Operation]>;
-  } & Omit<Awaited<supertest.Test>, 'body'>
+  // {
+  //   body: HasResponse<Operations[Operation]>;
+  // }
+  ResponseObjectToFlat<Operations[Operation]> & Omit<Awaited<supertest.Test>, 'body' | 'status'>
 > &
   supertest.Test;
 

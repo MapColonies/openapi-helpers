@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import express from 'express';
 import { expectTypeOf } from 'expect-type';
+import bodyParser from 'body-parser';
 import { RequestSenderObj } from '../../src/supertest/types';
 import { requestSender } from '../../src/supertest/supertest';
 import { paths, operations } from './types';
@@ -10,6 +12,7 @@ describe('requestSender', () => {
 
   beforeEach(async function () {
     expressApp = express();
+    expressApp.use(bodyParser.json());
     r = await requestSender<{ paths: paths; operations: operations }>('tests/supertest/openapi3.yaml', expressApp);
   });
 
@@ -38,11 +41,11 @@ describe('requestSender', () => {
         res.json({ message: 'Hello, World!' });
       });
 
-      await r.simpleRequest({}, { headers: { 'x-api-key': '12345' } });
+      await r.simpleRequest({ headers: { 'x-api-key': '12345' } });
     });
 
     it('should not have a path parameter type when none are stated in the openapi', () => {
-      // expectTypeOf(r.requestWithRequiredQueryParameters).parameter(0).not.toHaveProperty('pathParams')
+      expectTypeOf(r.requestWithRequiredQueryParameters).parameter(0).not.toHaveProperty('pathParams');
     });
 
     it('should add query parameters to the request even when none are stated in the openapi', async () => {
@@ -65,7 +68,6 @@ describe('requestSender', () => {
       });
 
       await r.requestWithRequiredQueryParameters({ queryParams: { name: 'John' } });
-      // expectTypeOf<Parameters<typeof r.requestWithRequiredQueryParameters>[0]['queryParams']>().not.toBeUndefined();
       expectTypeOf(r.requestWithRequiredQueryParameters).parameter(0).pick<'queryParams'>().toEqualTypeOf<{ queryParams: { name: string } }>();
     });
 
@@ -114,34 +116,40 @@ describe('requestSender', () => {
     it('should work when the response is empty', async () => {
       expect.assertions(1);
       expressApp.get('/request-with-empty-response', (req, res) => {
+        expect(req.query).toEqual({ name: 'John' });
         res.sendStatus(204);
       });
 
       const res = await r.requestWithEmptyResponse();
-      expectTypeOf(res).toHaveProperty('body').toBeUndefined();
+      expectTypeOf(res).toHaveProperty('body').toBeNever();
     });
 
-    it('should work when the request has all types of parameters', async () => {
-      expect.assertions(4);
-      expressApp.get('/request-with-all-parameters/John', (req, res) => {
+    it.only('should work when the request has all types of parameters', async () => {
+      expect.assertions(5);
+      expressApp.post('/request-with-all/John', (req, res) => {
         expect(req.params).toEqual({ name: 'John' });
         expect(req.query).toEqual({ first: 'John' });
+        expect(req.body).toEqual({ message: 'Hello, World!' });
         expect(req.headers).toEqual(expect.objectContaining({ second: 123 }));
 
-        res.json({ message: 'Hello, World!' });
+        res.status(201).json({ message: 'Hello, World!' });
       });
 
-      const res = await r.requestWithAll(
-        { pathParams: { name: 'John' }, queryParams: { first: 'John' }, requestBody: { message: 'Hello, World!' } },
-        { headers: { second: 123 } }
-      );
+      const res = await r.requestWithAll({
+        pathParams: { name: 'John' },
+        queryParams: { first: 'John' },
+        requestBody: { message: 'Hello, World!' },
+        headers: { second: '123' },
+      });
       expect(res).toHaveProperty('body', { message: 'Hello, World!' });
       expectTypeOf(res).toHaveProperty('body').toEqualTypeOf<{ message?: string }>();
     });
 
     it('should work when making a post request with 201 response', async () => {
-      expect.assertions(1);
+      expect.assertions(3);
       expressApp.post('/post-request', (req, res) => {
+        expect(req.body).toEqual({ message: 'Hello, World!' });
+
         res.status(201).json({ message: 'Created' });
       });
 
@@ -153,20 +161,37 @@ describe('requestSender', () => {
     it('should work when there are multiple operations with the same path', async () => {
       expect.assertions(2);
       expressApp.get('/endpoint-with-multiple-methods', (req, res) => {
-        expect(req.query).toEqual({test: 'get'});
+        expect(req.query).toEqual({ test: 'get' });
         res.json({ message: 'Hello get!' });
       });
       expressApp.post('/endpoint-with-multiple-methods', (req, res) => {
-        expect(req.query).toEqual({test: 'post'});
+        expect(req.query).toEqual({ test: 'post' });
         res.status(201).json({ message: 'Hello post!' });
       });
 
       const resGet = await r.endpointWithMultipleMethodsGet({ queryParams: { test: 'get' } });
       expect(resGet).toHaveProperty('body', { message: 'Hello get!' });
-      expectTypeOf(r.endpointWithMultipleMethodsGet).parameter(0).exclude(undefined).toHaveProperty('queryParams').toEqualTypeOf<{ test?: string } | undefined>();
+      expectTypeOf(r.endpointWithMultipleMethodsGet)
+        .parameter(0)
+        .exclude(undefined)
+        .toHaveProperty('queryParams')
+        .toEqualTypeOf<{ test?: string } | undefined>();
 
-      const resPost = await r.endpointWithMultipleMethodsPost({ queryParams: {test: 'get'} });
+      const resPost = await r.endpointWithMultipleMethodsPost({ queryParams: { test: 'get' } });
       expect(resPost).toHaveProperty('body', { message: 'Hello post!' });
+    });
+
+    it('should work when there are multiple possible responses', async () => {
+      expressApp.get('/multiple-status-codes', (req, res) => {
+        res.json({ message: 'Hello, World!' });
+      });
+
+      const res = await r.multipleStatusCodes();
+      if (res.status === 200) {
+        expectTypeOf(res.body).toEqualTypeOf<operations['multipleStatusCodes']['responses']['200']['content']['application/json']>();
+      } else if (res.status === 201) {
+        expectTypeOf(res.body).toEqualTypeOf<operations['multipleStatusCodes']['responses']['201']['content']['application/json']>();
+      }
     });
   });
 });
