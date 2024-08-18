@@ -21,6 +21,11 @@ export type PathsTemplate = Record<
     };
   }
 >;
+
+export interface Headers {
+  headers?: Record<string, string>;
+}
+
 export type OperationsTemplate = Record<string, any>;
 
 export type Methods = 'get' | 'post' | 'put' | 'delete' | 'patch' | 'head' | 'options' | 'trace';
@@ -41,14 +46,16 @@ export type QueryParamsObj<T> = T extends { parameters: { query?: NonNullable<an
 // export type RequestBodyObj<T> = T extends { requestBody: { content: any } }
 //   ? { requestBody: Pick<T['requestBody']['content']['application/json'], WritableKeys<T['requestBody']['content']['application/json']>> }
 //   : { requestBody?: any };
-export type A<T extends {content: any} | undefined> = T extends {content: any} ? Pick<T['content']['application/json'], WritableKeys<T['content']['application/json']>> : undefined;
+export type A<T extends { content: any } | undefined> = T extends { content: any }
+  ? Pick<T['content']['application/json'], WritableKeys<T['content']['application/json']>>
+  : undefined;
 
 export type RequestBodyObj<T> = T extends { requestBody: { content: any } }
   ? { requestBody: Pick<T['requestBody']['content']['application/json'], WritableKeys<T['requestBody']['content']['application/json']>> }
   : T extends { requestBody?: undefined }
     ? { requestBody?: any }
     : T extends { requestBody?: { content: any } }
-      ? {requestBody? :A<T['requestBody']>}
+      ? { requestBody?: A<T['requestBody']> }
       : { requestBody?: any };
 
 export type PathRequestOptions<Paths extends PathsTemplate, Path extends keyof Paths, Method extends keyof Paths[Path]> = {
@@ -56,7 +63,8 @@ export type PathRequestOptions<Paths extends PathsTemplate, Path extends keyof P
   method: Method;
 } & PathParamsObj<Paths[Path][Method]> &
   QueryParamsObj<Paths[Path][Method]> &
-  RequestBodyObj<Paths[Path][Method]>;
+  RequestBodyObj<Paths[Path][Method]> &
+  Headers;
 
 export type PathRequestReturn<Paths extends PathsTemplate, Path extends keyof Paths, Method extends keyof Paths[Path]> = Promise<
   {
@@ -70,7 +78,8 @@ export type OperationRequestOptions<Operations extends OperationsTemplate, Opera
   Operations[OperationKey]
 > &
   QueryParamsObj<Operations[OperationKey]> &
-  RequestBodyObj<Operations[OperationKey]>;
+  RequestBodyObj<Operations[OperationKey]> &
+  Headers;
 
 export type OperationRequestReturn<Operations extends OperationsTemplate, Operation extends OperationsNames<Operations>> = Promise<
   {

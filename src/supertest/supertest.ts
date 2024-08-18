@@ -20,7 +20,6 @@ function sendRequest<Paths extends PathsTemplate, Path extends keyof Paths, Meth
   options: PathRequestOptions<Paths, Path, Method>
 ): PathRequestReturn<Paths, Path, Method> {
   const method = options.method as Methods;
-
   let actualPath = options.path as string;
 
   if (options.pathParams !== undefined) {
@@ -40,6 +39,13 @@ function sendRequest<Paths extends PathsTemplate, Path extends keyof Paths, Meth
   if (options.requestBody !== undefined) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     request = request.send(options.requestBody);
+  }
+
+  if (options.headers !== undefined) {
+    for (const [key, value] of Object.entries(options.headers)) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      request = request.set(key, value);
+    }
   }
 
   return request.set('Content-Type', 'application/json');
