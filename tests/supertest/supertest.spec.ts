@@ -187,11 +187,32 @@ describe('requestSender', () => {
       });
 
       const res = await r.multipleStatusCodes();
+
       if (res.status === 200) {
         expectTypeOf(res.body).toEqualTypeOf<operations['multipleStatusCodes']['responses']['200']['content']['application/json']>();
       } else if (res.status === 201) {
+        res.body;
         expectTypeOf(res.body).toEqualTypeOf<operations['multipleStatusCodes']['responses']['201']['content']['application/json']>();
+      }
+    });
+
+    it('should let you compare status to any number but then body is not typed', async () => {
+      expressApp.get('/simple-request', (req, res) => {
+        res.json({ message: 'Hello, World!' });
+      });
+
+      const res = await r.simpleRequest();
+      if (res.status === 503) {
+        expectTypeOf(res.body).toBeAny();
       }
     });
   });
 });
+
+type C = { status: 200; lol: 'xd' } | { status: 201; lol: 'y' };
+
+type D = C | { status: number & {} };
+
+type E = D['status'];
+
+const a: E = 300;

@@ -22,7 +22,7 @@ function sendRequest<Paths extends PathsTemplate, Path extends keyof Paths, Meth
   const method = options.method as Methods;
   let actualPath = options.path as string;
 
-  if (options.pathParams !== undefined) {
+  if ('pathParams' in options && options.pathParams !== undefined) {
     actualPath = Object.entries(options.pathParams).reduce((acc, [key, value]) => acc.replace(`{${key}}`, value as string), actualPath);
   }
 
@@ -36,9 +36,9 @@ function sendRequest<Paths extends PathsTemplate, Path extends keyof Paths, Meth
     request = request.query(options.queryParams);
   }
 
-  if (options.requestBody !== undefined) {
+  if ('requestBody' in options && options.requestBody !== undefined) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    request = request.send(options.requestBody);
+    request = request.send(options.requestBody as object);
   }
 
   if (options.headers !== undefined) {
@@ -48,6 +48,7 @@ function sendRequest<Paths extends PathsTemplate, Path extends keyof Paths, Meth
     }
   }
 
+  // @ts-expect-error whatever
   return request.set('Content-Type', 'application/json');
 }
 
