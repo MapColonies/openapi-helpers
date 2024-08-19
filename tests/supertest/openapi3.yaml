@@ -265,3 +265,27 @@ paths:
                   message:
                     type: string
                     example: Hello, World!
+  /with-5xx-response:
+    get:
+      operationId: with5xxResponse
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Hello, World!
+        '5xx':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Hello, World!

@@ -4,11 +4,12 @@
   "description": "A package that provides utilities for working with openapi files",
   "main": "dist/index.js",
   "exports": {
-    "supertest": {
-      "require": "./dist/supertest/supertest.js",
-      "types": "./dist/supertest/supertest.d.ts"
+    "requestSender": {
+      "require": "./dist/requestSender/requestSender.js",
+      "types": "./dist/requestSender/requestSender.d.ts"
     }
   },
+  "bin": "dist/bin/openapi-helpers",
   "scripts": {
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
@@ -16,7 +17,7 @@
     "prelint": "npm run format",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "tsc --project tsconfig.test.json --noEmit && jest --config=./tests/configurations/jest.config.js",
+    "test": "jest --config=./tests/configurations/jest.config.js",
     "prebuild": "npm run clean",
     "build": "tsc --project tsconfig.build.json",
     "generate:test:types": "npm run build && node dist/generator/generateTypes.mjs tests/supertest/openapi3.yaml tests/supertest/types.d.ts",

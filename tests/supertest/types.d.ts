@@ -178,6 +178,22 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/with-5xx-response": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["with5xxResponse"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 };
 export type webhooks = Record<string, never>;
 export type components = {
@@ -510,6 +526,41 @@ export interface operations {
             };
             /** @description Bad Request */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Hello, World! */
+                        message?: string;
+                    };
+                };
+            };
+        };
+    };
+    with5xxResponse: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example Hello, World! */
+                        message?: string;
+                    };
+                };
+            };
+            /** @description Internal Server Error */
+            "5xx": {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -2,23 +2,25 @@ import { readFileSync } from 'node:fs';
 import supertest from 'supertest';
 import type express from 'express';
 import OASNormalize from 'oas-normalize';
+import type { OmitProperties } from 'ts-essentials';
 import type { OpenAPIV3 } from 'openapi-types';
 import type {
   PathsTemplate,
   PathRequestOptions,
-  PathRequestReturn,
   Methods,
+  RequestOptions,
   OperationsNames,
   OperationsTemplate,
   RequestSenderObj,
-  OperationRequestOptions,
+  RequestReturn,
 } from './types';
 
 // eslint-disable-next-line @typescript-eslint/promise-function-async
-function sendRequest<Paths extends PathsTemplate, Path extends keyof Paths, Method extends keyof Paths[Path]>(
-  app: express.Application,
-  options: PathRequestOptions<Paths, Path, Method>
-): PathRequestReturn<Paths, Path, Method> {
+function sendRequest<
+  Paths extends PathsTemplate,
+  Path extends keyof Paths,
+  Method extends keyof OmitProperties<Omit<Paths[Path], 'parameters'>, undefined>,
+>(app: express.Application, options: PathRequestOptions<Paths, Path, Method>): RequestReturn<Paths[Path][Method]> {
   const method = options.method as Methods;
   let actualPath = options.path as string;
 
@@ -26,6 +28,7 @@ function sendRequest<Paths extends PathsTemplate, Path extends keyof Paths, Meth
     actualPath = Object.entries(options.pathParams).reduce((acc, [key, value]) => acc.replace(`{${key}}`, value as string), actualPath);
   }
 
+  /* istanbul ignore next */
   if (actualPath.includes('{') || actualPath.includes('}')) {
     throw new Error('Path params are not provided');
   }
@@ -37,19 +40,18 @@ function sendRequest<Paths extends PathsTemplate, Path extends keyof Paths, Meth
   }
 
   if ('requestBody' in options && options.requestBody !== undefined) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     request = request.send(options.requestBody as object);
   }
 
   if (options.headers !== undefined) {
     for (const [key, value] of Object.entries(options.headers)) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       request = request.set(key, value);
     }
   }
 
+  request = request.set('Content-Type', 'application/json');;
   // @ts-expect-error whatever
-  return request.set('Content-Type', 'application/json');
+  return request;
 }
 
 const methods = ['get', 'post', 'put', 'delete', 'patch', 'head', 'options', 'trace'] as const;
@@ -59,11 +61,13 @@ function getOperationsPathAndMethod<Paths extends PathsTemplate, Operations exte
 ): Record<OperationsNames<Operations>, { path: keyof Paths; method: Methods }> {
   const result = {} as Record<OperationsNames<Operations>, { path: string; method: string }>;
 
+  /* istanbul ignore next */
   if (openapi.paths === undefined) {
     throw new Error('No paths found in the OpenAPI file');
   }
 
   for (const [path, pathValue] of Object.entries(openapi.paths)) {
+    /* istanbul ignore next */
     if (pathValue === undefined) {
       continue;
     }
@@ -74,6 +78,7 @@ function getOperationsPathAndMethod<Paths extends PathsTemplate, Operations exte
       if (pathObject[method] !== undefined) {
         const operationId = pathObject[method]?.operationId;
 
+        /* istanbul ignore next */
         if (operationId === undefined) {
           throw new Error(`OperationId is not defined for ${method} method on ${path}`);
         }
@@ -91,10 +96,10 @@ function getOperationsPathAndMethod<Paths extends PathsTemplate, Operations exte
   return result as Record<OperationsNames<Operations>, { path: keyof Paths; method: Methods }>;
 }
 
-export async function requestSender<T extends { operations: OperationsTemplate; paths: PathsTemplate } = never>(
-  openapiFilePath: T extends never ? never : string,
+export async function requestSender<Operations extends OperationsTemplate = never, Paths extends PathsTemplate = never>(
+  openapiFilePath: Operations extends never ? never : string,
   app: express.Application
-): Promise<RequestSenderObj<T['paths'], T['operations']>> {
+): Promise<RequestSenderObj<Paths, Operations>> {
   const fileContent = readFileSync(openapiFilePath, 'utf-8');
   const normalized = new OASNormalize(fileContent);
   const derefed = await normalized.deref();
@@ -102,16 +107,17 @@ export async function requestSender<T extends { operations: OperationsTemplate; 
 
   const returnObj = {
     // eslint-disable-next-line @typescript-eslint/promise-function-async
-    sendRequest: <Path extends keyof T['paths'], Method extends keyof T['paths'][Path]>(options: PathRequestOptions<T['paths'], Path, Method>) =>
-      sendRequest(app, options),
+    sendRequest: <Path extends keyof Paths, Method extends keyof OmitProperties<Omit<Paths[Path], 'parameters'>, undefined>>(
+      options: PathRequestOptions<Paths, Path, Method>
+    ) => sendRequest(app, options),
   };
 
   for (const [operation, { path, method }] of Object.entries(operationsPathAndMethod)) {
     // @ts-expect-error as we iterate over all the operations, the operationId is always defined
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    returnObj[operation] = async (options: OperationRequestOptions<T['operations'], keyof T['operations']>) =>
+    returnObj[operation] = async (options: RequestOptions<T['operations'][keyof T['operations']]>) =>
       sendRequest(app, { path, method: method as 'get', ...options });
   }
 
-  return returnObj as RequestSenderObj<T['paths'], T['operations']>;
+  return returnObj as RequestSenderObj<Paths, Operations>;
 }

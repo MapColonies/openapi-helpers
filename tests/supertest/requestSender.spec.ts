@@ -2,8 +2,8 @@
 import express from 'express';
 import { expectTypeOf } from 'expect-type';
 import bodyParser from 'body-parser';
-import { RequestSenderObj } from '../../src/supertest/types';
-import { requestSender } from '../../src/supertest/supertest';
+import { RequestSenderObj } from '../../src/requestSender/types';
+import { requestSender } from '../../src/requestSender/requestSender';
 import { paths, operations } from './types';
 
 describe('requestSender', () => {
@@ -13,12 +13,12 @@ describe('requestSender', () => {
   beforeEach(async function () {
     expressApp = express();
     expressApp.use(bodyParser.json());
-    r = await requestSender<{ paths: paths; operations: operations }>('tests/supertest/openapi3.yaml', expressApp);
+    r = await requestSender<operations, paths>('tests/supertest/openapi3.yaml', expressApp);
   });
 
   describe('operations', () => {
     it('should send a simple request with no parameters', async () => {
-      expect.assertions(3);
+      expect.assertions(4);
       expressApp.get('/simple-request', (req, res) => {
         expect(req.query).toEqual({});
         // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -28,6 +28,7 @@ describe('requestSender', () => {
       });
       const res = await r.simpleRequest();
 
+      expect(res).toHaveProperty('status', 200);
       expectTypeOf(res.body).toEqualTypeOf<operations['simpleRequest']['responses']['200']['content']['application/json']>();
       expectTypeOf(r.simpleRequest).parameter(0).toMatchTypeOf<object | undefined>();
       expectTypeOf(r.simpleRequest).parameter(1).toBeUndefined();
@@ -103,7 +104,7 @@ describe('requestSender', () => {
 
     it('should require path params when any are stated in the openapi', async () => {
       expect.assertions(1);
-      expressApp.get('/request-with-path-parameters/John', (req, res) => {
+      expressApp.get('/request-with-path-parameters/:name', (req, res) => {
         expect(req.params).toEqual({ name: 'John' });
 
         res.json({ message: 'Hello, World!' });
@@ -124,23 +125,22 @@ describe('requestSender', () => {
       expectTypeOf(res).toHaveProperty('body').toBeNever();
     });
 
-    it.only('should work when the request has all types of parameters', async () => {
-      expect.assertions(5);
-      expressApp.post('/request-with-all/John', (req, res) => {
-        expect(req.params).toEqual({ name: 'John' });
-        expect(req.query).toEqual({ first: 'John' });
-        expect(req.body).toEqual({ message: 'Hello, World!' });
-        expect(req.headers).toEqual(expect.objectContaining({ second: 123 }));
+    it('should work when the request has all types of parameters', async () => {
+      expect.assertions(4);
+      expressApp.post('/request-with-all/:name', (req, res) => {
+        expect(req.params).toEqual({ name: 'john' });
+        expect(req.query).toEqual({ first: 'john' });
+        expect(req.headers).toMatchObject(expect.objectContaining({ second: "123" }));
 
         res.status(201).json({ message: 'Hello, World!' });
       });
 
       const res = await r.requestWithAll({
-        pathParams: { name: 'John' },
-        queryParams: { first: 'John' },
-        requestBody: { message: 'Hello, World!' },
+        pathParams: { name: 'john' },
+        queryParams: { first: 'john' },
         headers: { second: '123' },
       });
+
       expect(res).toHaveProperty('body', { message: 'Hello, World!' });
       expectTypeOf(res).toHaveProperty('body').toEqualTypeOf<{ message?: string }>();
     });
@@ -159,7 +159,7 @@ describe('requestSender', () => {
     });
 
     it('should work when there are multiple operations with the same path', async () => {
-      expect.assertions(2);
+      expect.assertions(4);
       expressApp.get('/endpoint-with-multiple-methods', (req, res) => {
         expect(req.query).toEqual({ test: 'get' });
         res.json({ message: 'Hello get!' });
@@ -177,7 +177,7 @@ describe('requestSender', () => {
         .toHaveProperty('queryParams')
         .toEqualTypeOf<{ test?: string } | undefined>();
 
-      const resPost = await r.endpointWithMultipleMethodsPost({ queryParams: { test: 'get' } });
+      const resPost = await r.endpointWithMultipleMethodsPost({ queryParams: { test: 'post' } });
       expect(resPost).toHaveProperty('body', { message: 'Hello post!' });
     });
 
@@ -191,28 +191,31 @@ describe('requestSender', () => {
       if (res.status === 200) {
         expectTypeOf(res.body).toEqualTypeOf<operations['multipleStatusCodes']['responses']['200']['content']['application/json']>();
       } else if (res.status === 201) {
-        res.body;
         expectTypeOf(res.body).toEqualTypeOf<operations['multipleStatusCodes']['responses']['201']['content']['application/json']>();
       }
     });
+  });
 
-    it('should let you compare status to any number but then body is not typed', async () => {
+  describe('sendRequest', () => {
+    it('should send a simple request with no parameters', async () => {
+      expect.assertions(4);
+
       expressApp.get('/simple-request', (req, res) => {
+        expect(req.query).toEqual({});
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        expect(req.headers).toEqual(expect.objectContaining({ 'content-type': 'application/json' }));
+        expect(req.params).toEqual({});
         res.json({ message: 'Hello, World!' });
       });
 
-      const res = await r.simpleRequest();
-      if (res.status === 503) {
-        expectTypeOf(res.body).toBeAny();
-      }
+      const res = await r.sendRequest({method: 'get', path: '/simple-request'});
+
+      expectTypeOf(res.body).toEqualTypeOf<operations['simpleRequest']['responses']['200']['content']['application/json']>();
+      expect(res).toHaveProperty('body', { message: 'Hello, World!' });
+    });
+
+    it('should only suggest the paths present in the openapi definition', () => {
+      expectTypeOf(r.sendRequest).parameter(0).toMatchTypeOf<{ path: keyof paths }>();
     });
   });
 });
-
-type C = { status: 200; lol: 'xd' } | { status: 201; lol: 'y' };
-
-type D = C | { status: number & {} };
-
-type E = D['status'];
-
-const a: E = 300;

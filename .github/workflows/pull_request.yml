@@ -54,7 +54,7 @@ jobs:
           AZURE_STORAGE_SAS_TOKEN: ${{ secrets.SAS_TOKEN }}
         with:
           inlineScript: |
-            az storage blob upload --name config-$GITHUB_SHA.tgz --account-name ghatmpstorage --container-name=npm-packages --file map-colonies-config-${{steps.json_properties.outputs.version}}.tgz
+            az storage blob upload --name openapi-helpers-$GITHUB_SHA.tgz --account-name ghatmpstorage --container-name=npm-packages --file map-colonies-openapi-helpers-${{steps.json_properties.outputs.version}}.tgz
       - name: Comment on PR
         uses: thollander/actions-comment-pull-request@v2
         with:
@@ -65,7 +65,7 @@ jobs:
             ```json
             {
               "dependencies": {
-                  "@map-colonies/config": "https://ghatmpstorage.blob.core.windows.net/npm-packages/config-${{ github.sha }}.tgz"
+                  "@map-colonies/openapi-helpers": "https://ghatmpstorage.blob.core.windows.net/npm-packages/openapi-helpers-${{ github.sha }}.tgz"
               }
             }
             ```
