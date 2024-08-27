@@ -82,7 +82,7 @@ type SendRequest<Paths extends PathsTemplate> = <Path extends keyof Paths, Metho
   options: PathRequestOptions<Paths, Path, Method>
 ) => RequestReturn<Paths[Path][Method]>;
 
-export type RequestSenderObj<Paths extends PathsTemplate, Operations extends OperationsTemplate> = Prettify<{
+export type RequestSender<Paths extends PathsTemplate, Operations extends OperationsTemplate> = Prettify<{
   sendRequest: SendRequest<Paths>;
 } & {
   [operation in OperationsNames<Operations>]: RequiredKeys<RequestOptions<Operations[operation]>> extends OptionalKeys<

@@ -2,14 +2,13 @@
   "name": "@map-colonies/openapi-helpers",
   "version": "0.0.1",
   "description": "A package that provides utilities for working with openapi files",
-  "main": "dist/index.js",
   "exports": {
-    "requestSender": {
-      "require": "./dist/requestSender/requestSender.js",
+    "./requestSender": {
+      "default": "./dist/requestSender/requestSender.js",
       "types": "./dist/requestSender/requestSender.d.ts"
     }
   },
-  "bin": "dist/bin/openapi-helpers",
+  "bin": "./dist/generator/generateTypes.mjs",
   "scripts": {
     "format": "prettier --check .",
     "format:fix": "prettier --write .",

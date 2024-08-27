@@ -2,18 +2,18 @@
 import express from 'express';
 import { expectTypeOf } from 'expect-type';
 import bodyParser from 'body-parser';
-import { RequestSenderObj } from '../../src/requestSender/types';
-import { requestSender } from '../../src/requestSender/requestSender';
+import { RequestSender } from '../../src/requestSender/types';
+import { createRequestSender } from '../../src/requestSender/requestSender';
 import { paths, operations } from './types';
 
 describe('requestSender', () => {
   let expressApp: express.Application;
-  let r: RequestSenderObj<paths, operations>;
+  let requestSender: RequestSender<paths, operations>;
 
   beforeEach(async function () {
     expressApp = express();
     expressApp.use(bodyParser.json());
-    r = await requestSender<operations, paths>('tests/supertest/openapi3.yaml', expressApp);
+    requestSender = await createRequestSender<paths, operations>('tests/supertest/openapi3.yaml', expressApp);
   });
 
   describe('operations', () => {
@@ -26,12 +26,12 @@ describe('requestSender', () => {
         expect(req.params).toEqual({});
         res.json({ message: 'Hello, World!' });
       });
-      const res = await r.simpleRequest();
+      const res = await requestSender.simpleRequest();
 
       expect(res).toHaveProperty('status', 200);
       expectTypeOf(res.body).toEqualTypeOf<operations['simpleRequest']['responses']['200']['content']['application/json']>();
-      expectTypeOf(r.simpleRequest).parameter(0).toMatchTypeOf<object | undefined>();
-      expectTypeOf(r.simpleRequest).parameter(1).toBeUndefined();
+      expectTypeOf(requestSender.simpleRequest).parameter(0).toMatchTypeOf<object | undefined>();
+      expectTypeOf(requestSender.simpleRequest).parameter(1).toBeUndefined();
     });
 
     it('should allow to add headers to the request even when none are required', async () => {
@@ -42,11 +42,11 @@ describe('requestSender', () => {
         res.json({ message: 'Hello, World!' });
       });
 
-      await r.simpleRequest({ headers: { 'x-api-key': '12345' } });
+      await requestSender.simpleRequest({ headers: { 'x-api-key': '12345' } });
     });
 
     it('should not have a path parameter type when none are stated in the openapi', () => {
-      expectTypeOf(r.requestWithRequiredQueryParameters).parameter(0).not.toHaveProperty('pathParams');
+      expectTypeOf(requestSender.requestWithRequiredQueryParameters).parameter(0).not.toHaveProperty('pathParams');
     });
 
     it('should add query parameters to the request even when none are stated in the openapi', async () => {
@@ -57,7 +57,7 @@ describe('requestSender', () => {
         res.json({ message: 'Hello, World!' });
       });
 
-      await r.simpleRequest({ queryParams: { name: 'John' } });
+      await requestSender.simpleRequest({ queryParams: { name: 'John' } });
     });
 
     it('should require query parameters when they are stated as required in the openapi', async () => {
@@ -68,8 +68,8 @@ describe('requestSender', () => {
         res.json({ message: 'Hello, World!' });
       });
 
-      await r.requestWithRequiredQueryParameters({ queryParams: { name: 'John' } });
-      expectTypeOf(r.requestWithRequiredQueryParameters).parameter(0).pick<'queryParams'>().toEqualTypeOf<{ queryParams: { name: string } }>();
+      await requestSender.requestWithRequiredQueryParameters({ queryParams: { name: 'John' } });
+      expectTypeOf(requestSender.requestWithRequiredQueryParameters).parameter(0).pick<'queryParams'>().toEqualTypeOf<{ queryParams: { name: string } }>();
     });
 
     it('should have the entire query parameters object as optional when they are all optional in the openapi', async () => {
@@ -80,9 +80,9 @@ describe('requestSender', () => {
         res.json({ message: 'Hello, World!' });
       });
 
-      await r.requestWithOptionalQueryParameters({ queryParams: { name: 'John' } });
+      await requestSender.requestWithOptionalQueryParameters({ queryParams: { name: 'John' } });
 
-      expectTypeOf(r.requestWithOptionalQueryParameters)
+      expectTypeOf(requestSender.requestWithOptionalQueryParameters)
         .parameter(0)
         .exclude<undefined>()
         .toHaveProperty('queryParams')
@@ -97,9 +97,9 @@ describe('requestSender', () => {
         res.json({ message: 'Hello, World!' });
       });
 
-      await r.requestWithMixedQueryParameters({ queryParams: { name: 'John' } });
+      await requestSender.requestWithMixedQueryParameters({ queryParams: { name: 'John' } });
 
-      expectTypeOf(r.requestWithMixedQueryParameters).parameter(0).toHaveProperty('queryParams').toEqualTypeOf<{ name: string; age?: number }>();
+      expectTypeOf(requestSender.requestWithMixedQueryParameters).parameter(0).toHaveProperty('queryParams').toEqualTypeOf<{ name: string; age?: number }>();
     });
 
     it('should require path params when any are stated in the openapi', async () => {
@@ -110,8 +110,8 @@ describe('requestSender', () => {
         res.json({ message: 'Hello, World!' });
       });
 
-      await r.requestWithPathParameters({ pathParams: { name: 'John' } });
-      expectTypeOf(r.requestWithPathParameters).parameter(0).toHaveProperty('pathParams').not.toBeUndefined();
+      await requestSender.requestWithPathParameters({ pathParams: { name: 'John' } });
+      expectTypeOf(requestSender.requestWithPathParameters).parameter(0).toHaveProperty('pathParams').not.toBeUndefined();
     });
 
     it('should work when the response is empty', async () => {
@@ -121,7 +121,7 @@ describe('requestSender', () => {
         res.sendStatus(204);
       });
 
-      const res = await r.requestWithEmptyResponse();
+      const res = await requestSender.requestWithEmptyResponse();
       expectTypeOf(res).toHaveProperty('body').toBeNever();
     });
 
@@ -135,7 +135,7 @@ describe('requestSender', () => {
         res.status(201).json({ message: 'Hello, World!' });
       });
 
-      const res = await r.requestWithAll({
+      const res = await requestSender.requestWithAll({
         pathParams: { name: 'john' },
         queryParams: { first: 'john' },
         headers: { second: '123' },
@@ -153,7 +153,7 @@ describe('requestSender', () => {
         res.status(201).json({ message: 'Created' });
       });
 
-      const res = await r.postRequest({ requestBody: { message: 'Hello, World!' } });
+      const res = await requestSender.postRequest({ requestBody: { message: 'Hello, World!' } });
       expect(res).toHaveProperty('body', { message: 'Created' });
       expect(res).toHaveProperty('status', 201);
     });
@@ -169,15 +169,15 @@ describe('requestSender', () => {
         res.status(201).json({ message: 'Hello post!' });
       });
 
-      const resGet = await r.endpointWithMultipleMethodsGet({ queryParams: { test: 'get' } });
+      const resGet = await requestSender.endpointWithMultipleMethodsGet({ queryParams: { test: 'get' } });
       expect(resGet).toHaveProperty('body', { message: 'Hello get!' });
-      expectTypeOf(r.endpointWithMultipleMethodsGet)
+      expectTypeOf(requestSender.endpointWithMultipleMethodsGet)
         .parameter(0)
         .exclude(undefined)
         .toHaveProperty('queryParams')
         .toEqualTypeOf<{ test?: string } | undefined>();
 
-      const resPost = await r.endpointWithMultipleMethodsPost({ queryParams: { test: 'post' } });
+      const resPost = await requestSender.endpointWithMultipleMethodsPost({ queryParams: { test: 'post' } });
       expect(resPost).toHaveProperty('body', { message: 'Hello post!' });
     });
 
@@ -186,7 +186,7 @@ describe('requestSender', () => {
         res.json({ message: 'Hello, World!' });
       });
 
-      const res = await r.multipleStatusCodes();
+      const res = await requestSender.multipleStatusCodes();
 
       if (res.status === 200) {
         expectTypeOf(res.body).toEqualTypeOf<operations['multipleStatusCodes']['responses']['200']['content']['application/json']>();
@@ -208,14 +208,14 @@ describe('requestSender', () => {
         res.json({ message: 'Hello, World!' });
       });
 
-      const res = await r.sendRequest({method: 'get', path: '/simple-request'});
+      const res = await requestSender.sendRequest({method: 'get', path: '/simple-request'});
 
       expectTypeOf(res.body).toEqualTypeOf<operations['simpleRequest']['responses']['200']['content']['application/json']>();
       expect(res).toHaveProperty('body', { message: 'Hello, World!' });
     });
 
     it('should only suggest the paths present in the openapi definition', () => {
-      expectTypeOf(r.sendRequest).parameter(0).toMatchTypeOf<{ path: keyof paths }>();
+      expectTypeOf(requestSender.sendRequest).parameter(0).toMatchTypeOf<{ path: keyof paths }>();
     });
   });
 });

@@ -11,7 +11,7 @@ import type {
   RequestOptions,
   OperationsNames,
   OperationsTemplate,
-  RequestSenderObj,
+  RequestSender,
   RequestReturn,
 } from './types';
 
@@ -49,7 +49,7 @@ function sendRequest<
     }
   }
 
-  request = request.set('Content-Type', 'application/json');;
+  request = request.set('Content-Type', 'application/json');
   // @ts-expect-error whatever
   return request;
 }
@@ -96,10 +96,22 @@ function getOperationsPathAndMethod<Paths extends PathsTemplate, Operations exte
   return result as Record<OperationsNames<Operations>, { path: keyof Paths; method: Methods }>;
 }
 
-export async function requestSender<Operations extends OperationsTemplate = never, Paths extends PathsTemplate = never>(
+export { RequestSender };
+
+/**
+ * Creates a request sender object that can be used to send fake HTTP requests using supertest based on an OpenAPI specification.
+ * The openapi types should be generated using the openapi-typescript package.
+ *
+ * @template Paths - The type representing the paths defined in the OpenAPI specification.
+ * @template Operations - The type representing the operations defined in the OpenAPI specification.
+ * @param {string} openapiFilePath - The file path to the OpenAPI specification file.
+ * @param {express.Application} app - The Express application instance.
+ * @returns {Promise<RequestSender<Paths, Operations>>} A promise that resolves to a RequestSender object.
+ */
+export async function createRequestSender<Paths extends PathsTemplate = never, Operations extends OperationsTemplate = never>(
   openapiFilePath: Operations extends never ? never : string,
   app: express.Application
-): Promise<RequestSenderObj<Paths, Operations>> {
+): Promise<RequestSender<Paths, Operations>> {
   const fileContent = readFileSync(openapiFilePath, 'utf-8');
   const normalized = new OASNormalize(fileContent);
   const derefed = await normalized.deref();
@@ -119,5 +131,5 @@ export async function requestSender<Operations extends OperationsTemplate = neve
       sendRequest(app, { path, method: method as 'get', ...options });
   }
 
-  return returnObj as RequestSenderObj<Paths, Operations>;
+  return returnObj as RequestSender<Paths, Operations>;
 }
