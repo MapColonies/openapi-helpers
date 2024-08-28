@@ -78,16 +78,21 @@ type OperationRequestRequired<Operations extends OperationsTemplate, Operation e
   options: RequestOptions<Operations[Operation]>
 ) => RequestReturn<Operations[Operation]>;
 
-type SendRequest<Paths extends PathsTemplate> = <Path extends keyof Paths, Method extends keyof OmitProperties<Omit<Paths[Path], 'parameters'>, undefined>> (
+type SendRequest<Paths extends PathsTemplate> = <
+  Path extends keyof Paths,
+  Method extends keyof OmitProperties<Omit<Paths[Path], 'parameters'>, undefined>,
+>(
   options: PathRequestOptions<Paths, Path, Method>
 ) => RequestReturn<Paths[Path][Method]>;
 
-export type RequestSender<Paths extends PathsTemplate, Operations extends OperationsTemplate> = Prettify<{
-  sendRequest: SendRequest<Paths>;
-} & {
-  [operation in OperationsNames<Operations>]: RequiredKeys<RequestOptions<Operations[operation]>> extends OptionalKeys<
-  RequestOptions<Operations[operation]>
-  >
-    ? OperationRequestOptional<Operations, operation>
-    : OperationRequestRequired<Operations, operation>;
-}>;
+export type RequestSender<Paths extends PathsTemplate, Operations extends OperationsTemplate> = Prettify<
+  {
+    sendRequest: SendRequest<Paths>;
+  } & {
+    [operation in OperationsNames<Operations>]: RequiredKeys<RequestOptions<Operations[operation]>> extends OptionalKeys<
+      RequestOptions<Operations[operation]>
+    >
+      ? OperationRequestOptional<Operations, operation>
+      : OperationRequestRequired<Operations, operation>;
+  }
+>;

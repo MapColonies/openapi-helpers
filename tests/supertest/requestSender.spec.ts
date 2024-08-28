@@ -69,7 +69,10 @@ describe('requestSender', () => {
       });
 
       await requestSender.requestWithRequiredQueryParameters({ queryParams: { name: 'John' } });
-      expectTypeOf(requestSender.requestWithRequiredQueryParameters).parameter(0).pick<'queryParams'>().toEqualTypeOf<{ queryParams: { name: string } }>();
+      expectTypeOf(requestSender.requestWithRequiredQueryParameters)
+        .parameter(0)
+        .pick<'queryParams'>()
+        .toEqualTypeOf<{ queryParams: { name: string } }>();
     });
 
     it('should have the entire query parameters object as optional when they are all optional in the openapi', async () => {
@@ -99,7 +102,10 @@ describe('requestSender', () => {
 
       await requestSender.requestWithMixedQueryParameters({ queryParams: { name: 'John' } });
 
-      expectTypeOf(requestSender.requestWithMixedQueryParameters).parameter(0).toHaveProperty('queryParams').toEqualTypeOf<{ name: string; age?: number }>();
+      expectTypeOf(requestSender.requestWithMixedQueryParameters)
+        .parameter(0)
+        .toHaveProperty('queryParams')
+        .toEqualTypeOf<{ name: string; age?: number }>();
     });
 
     it('should require path params when any are stated in the openapi', async () => {
@@ -130,7 +136,7 @@ describe('requestSender', () => {
       expressApp.post('/request-with-all/:name', (req, res) => {
         expect(req.params).toEqual({ name: 'john' });
         expect(req.query).toEqual({ first: 'john' });
-        expect(req.headers).toMatchObject(expect.objectContaining({ second: "123" }));
+        expect(req.headers).toMatchObject(expect.objectContaining({ second: '123' }));
 
         res.status(201).json({ message: 'Hello, World!' });
       });
@@ -208,7 +214,7 @@ describe('requestSender', () => {
         res.json({ message: 'Hello, World!' });
       });
 
-      const res = await requestSender.sendRequest({method: 'get', path: '/simple-request'});
+      const res = await requestSender.sendRequest({ method: 'get', path: '/simple-request' });
 
       expectTypeOf(res.body).toEqualTypeOf<operations['simpleRequest']['responses']['200']['content']['application/json']>();
       expect(res).toHaveProperty('body', { message: 'Hello, World!' });
