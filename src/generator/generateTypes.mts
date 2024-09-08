@@ -6,11 +6,9 @@ import openapiTS, { astToString } from 'openapi-typescript';
 
 const ARGS_SLICE = 2;
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const {
   values: { format: shouldFormat },
   positionals,
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
 } = parseArgs({
   args: process.argv.slice(ARGS_SLICE),
   options: {

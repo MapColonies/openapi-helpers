@@ -21,7 +21,6 @@ describe('requestSender', () => {
       expect.assertions(4);
       expressApp.get('/simple-request', (req, res) => {
         expect(req.query).toEqual({});
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         expect(req.headers).toEqual(expect.objectContaining({ 'content-type': 'application/json' }));
         expect(req.params).toEqual({});
         res.json({ message: 'Hello, World!' });
@@ -208,7 +207,6 @@ describe('requestSender', () => {
 
       expressApp.get('/simple-request', (req, res) => {
         expect(req.query).toEqual({});
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         expect(req.headers).toEqual(expect.objectContaining({ 'content-type': 'application/json' }));
         expect(req.params).toEqual({});
         res.json({ message: 'Hello, World!' });

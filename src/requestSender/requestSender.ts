@@ -15,7 +15,6 @@ import type {
   RequestReturn,
 } from './types';
 
-// eslint-disable-next-line @typescript-eslint/promise-function-async
 function sendRequest<
   Paths extends PathsTemplate,
   Path extends keyof Paths,
