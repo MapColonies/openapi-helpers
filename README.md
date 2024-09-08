@@ -29,7 +29,7 @@ The package contains a wrapper for the `supertest` package that provides autocom
 import { RequestSender } from '@map-colonies/openapi-helpers/requestSender';
 import type { paths, operations } from './src/openapi.d.ts';
 
-const requestSender = await RequestSender<paths, operations>('http://localhost:8080', openapiSchema, openapiTypes);
+const requestSender = await createRequestSender<paths, operations>('path/to/openapi3.yaml', expressApp);
 ```
 
 The requestSender object contains all the paths and operations defined in the openapi schema. For example, to send a request to the `getUsers` operation with the `/users` path and with the `GET` method, you can use the following code:
@@ -49,7 +49,7 @@ The package supports all the operations defined in the openapi schema, either by
 
 
 > [!IMPORTANT]
-> For the package to work, you need to make sure that the following values are configured in your  `tsconfig.json` or `jsconfig.json` files under compilerOptions:
+> For the package function properly, you need to make sure that the following values are configured in your  `tsconfig.json` or `jsconfig.json` files under compilerOptions:
 > - module: "NodeNext"
 > - moduleResolution: "NodeNext"
 
