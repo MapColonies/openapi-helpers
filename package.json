@@ -41,6 +41,9 @@
   "files": [
     "dist/**/*"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "homepage": "https://github.com/MapColonies/openapi-helpers#readme",
   "dependencies": {
     "oas-normalize": "^11.1.1",
