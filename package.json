@@ -1,6 +1,6 @@
 {
   "name": "@map-colonies/openapi-helpers",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A package that provides utilities for working with openapi files",
   "exports": {
     "./requestSender": {
