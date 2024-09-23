@@ -2,25 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { OmitProperties, OptionalKeys, Prettify, RequiredKeys } from 'ts-essentials';
 import type * as supertest from 'supertest';
-import type { AddIfNotNever, PickWritable } from '../common/types';
-
-export type Methods = 'get' | 'post' | 'put' | 'delete' | 'patch' | 'head' | 'options' | 'trace';
-
-export type OperationsTemplate = Record<string, any>;
-
-export type PathsTemplate = Record<
-  string,
-  {
-    parameters: {
-      query?: any;
-      header?: any;
-      path?: any;
-      cookie?: any;
-    };
-  } & {
-    [key in Methods]?: OperationsTemplate;
-  }
->;
+import type { AddIfNotNever, OperationsTemplate, PathsTemplate, PickWritable } from '../common/types';
 
 interface Headers {
   headers?: Record<string, string>;
@@ -28,7 +10,7 @@ interface Headers {
 
 type HasContent<T> = [T] extends [{ content: any }] ? T['content']['application/json'] : never;
 
-type ResponseObjectToFlat<T> = [T] extends [{ responses: any }]
+export type ResponseObjectToFlat<T> = [T] extends [{ responses: any }]
   ? {
       [res in keyof T['responses']]: { status: res; body: HasContent<T['responses'][res]> };
     }[keyof T['responses']]
