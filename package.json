@@ -6,6 +6,10 @@
     "./requestSender": {
       "default": "./dist/requestSender/requestSender.js",
       "types": "./dist/requestSender/requestSender.d.ts"
+    },
+    "./typedRequestHandler": {
+      "default": "./dist/typedRequestHandler/typedRequestHandler.js",
+      "types": "./dist/typedRequestHandler/typedRequestHandler.d.ts"
     }
   },
   "bin": "./dist/generator/generateTypes.mjs",
@@ -19,7 +23,7 @@
     "test": "jest --config=./tests/configurations/jest.config.js",
     "prebuild": "npm run clean",
     "build": "tsc --project tsconfig.build.json",
-    "generate:test:types": "npm run build && node dist/generator/generateTypes.mjs tests/supertest/openapi3.yaml tests/supertest/types.d.ts",
+    "generate:test:types": "npm run build && node dist/generator/generateTypes.mjs tests/openapi3.yaml tests/types.d.ts",
     "clean": "rimraf dist",
     "prepublish": "npm run build"
   },
@@ -52,7 +56,7 @@
   },
   "peerDependencies": {
     "@types/express": "^4.17.21",
-    "openapi-typescript": "^7.3.0",
+    "openapi-typescript": "^7.4.1",
     "prettier": "^3.3.3",
     "supertest": "^7.0.0"
   },

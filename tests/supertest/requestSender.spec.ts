@@ -4,7 +4,7 @@ import { expectTypeOf } from 'expect-type';
 import bodyParser from 'body-parser';
 import { RequestSender } from '../../src/requestSender/types';
 import { createRequestSender } from '../../src/requestSender/requestSender';
-import { paths, operations } from './types';
+import { paths, operations } from '../types';
 
 describe('requestSender', () => {
   let expressApp: express.Application;
@@ -13,7 +13,7 @@ describe('requestSender', () => {
   beforeEach(async function () {
     expressApp = express();
     expressApp.use(bodyParser.json());
-    requestSender = await createRequestSender<paths, operations>('tests/supertest/openapi3.yaml', expressApp);
+    requestSender = await createRequestSender<paths, operations>('tests/openapi3.yaml', expressApp);
   });
 
   describe('operations', () => {

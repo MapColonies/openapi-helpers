@@ -4,16 +4,8 @@ import type express from 'express';
 import OASNormalize from 'oas-normalize';
 import type { OmitProperties } from 'ts-essentials';
 import type { OpenAPIV3 } from 'openapi-types';
-import type {
-  PathsTemplate,
-  PathRequestOptions,
-  Methods,
-  RequestOptions,
-  OperationsNames,
-  OperationsTemplate,
-  RequestSender,
-  RequestReturn,
-} from './types';
+import { PathsTemplate, Methods, OperationsTemplate } from '../common/types';
+import type { PathRequestOptions, RequestOptions, OperationsNames, RequestSender, RequestReturn } from './types';
 
 function sendRequest<
   Paths extends PathsTemplate,
