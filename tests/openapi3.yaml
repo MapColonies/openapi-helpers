@@ -289,3 +289,26 @@ paths:
                   message:
                     type: string
                     example: Hello, World!
+  /optional-request-body:
+    post:
+      operationId: optionalRequestBody
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Hello, World!

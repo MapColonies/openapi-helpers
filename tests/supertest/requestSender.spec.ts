@@ -163,6 +163,23 @@ describe('requestSender', () => {
       expect(res).toHaveProperty('status', 201);
     });
 
+    it('should work when the request body is optional', async () => {
+      expect.assertions(2);
+      expressApp.post('/optional-request-body', (req, res) => {
+        expect(req.body).toEqual({ message: 'Hello, World!' });
+
+        res.json({ message: 'Hello, World!' });
+      });
+
+      const res = await requestSender.optionalRequestBody({ requestBody: { message: 'Hello, World!' } });
+      expect(res).toHaveProperty('body', { message: 'Hello, World!' });
+      expectTypeOf(requestSender.optionalRequestBody)
+        .parameter(0)
+        .exclude(undefined)
+        .toHaveProperty('requestBody')
+        .toEqualTypeOf<{ message?: string } | undefined>();
+    });
+
     it('should work when there are multiple operations with the same path', async () => {
       expect.assertions(4);
       expressApp.get('/endpoint-with-multiple-methods', (req, res) => {
