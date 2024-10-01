@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/MapColonies/openapi-helpers/compare/v1.1.0...v1.1.1) (2024-10-01)
+
+
+### Bug Fixes
+
+* incorrect types when request body is optional ([#6](https://github.com/MapColonies/openapi-helpers/issues/6)) ([c971a36](https://github.com/MapColonies/openapi-helpers/commit/c971a36ecbda8f16097e90ec9dc3aaa81ef94675))
+
 ## [1.1.0](https://github.com/MapColonies/openapi-helpers/compare/v1.0.0...v1.1.0) (2024-09-24)
 
 
