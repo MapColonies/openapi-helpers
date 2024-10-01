@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/MapColonies/openapi-helpers/compare/v1.1.1...v1.2.0) (2024-10-01)
+
+
+### Features
+
+* add option to export typed handler from generated openapi types ([#8](https://github.com/MapColonies/openapi-helpers/issues/8)) ([3ec1c83](https://github.com/MapColonies/openapi-helpers/commit/3ec1c834299b1bca87faf55bf6f289c41fcf3642))
+
 ## [1.1.1](https://github.com/MapColonies/openapi-helpers/compare/v1.1.0...v1.1.1) (2024-10-01)
 
 
