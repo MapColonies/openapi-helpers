@@ -26,8 +26,8 @@ type QueryParamsObj<T> = [T] extends [{ parameters: { query?: NonNullable<any> }
       : { queryParams: T['parameters']['query'] }
   : { queryParams?: Record<string, string> };
 
-type ContentOrUndefined<T extends { content: any } | undefined> = [T] extends [{ content: any }]
-  ? PickWritable<T['content']['application/json']>
+type ContentOrUndefined<T extends { content: any } | undefined> = [T] extends [{ content: any } | undefined]
+  ? Exclude<T, undefined>['content']['application/json'] | undefined
   : undefined;
 
 type RequestBodyObj<T> = [T] extends [{ requestBody: { content: any } }]

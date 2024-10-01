@@ -194,6 +194,22 @@ export type paths = {
     patch?: never;
     trace?: never;
   };
+  '/optional-request-body': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['optionalRequestBody'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 };
 export type webhooks = Record<string, never>;
 export type components = {
@@ -561,6 +577,35 @@ export interface operations {
       };
       /** @description Internal Server Error */
       '5xx': {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @example Hello, World! */
+            message?: string;
+          };
+        };
+      };
+    };
+  };
+  optionalRequestBody: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        'application/json': {
+          message?: string;
+        };
+      };
+    };
+    responses: {
+      /** @description OK */
+      201: {
         headers: {
           [name: string]: unknown;
         };
