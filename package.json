@@ -20,7 +20,7 @@
     "prelint": "npm run format",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "jest --config=./tests/configurations/jest.config.js",
+    "test": "tsc --project tsconfig.test.json && jest --config=./tests/configurations/jest.config.js",
     "prebuild": "npm run clean",
     "build": "tsc --project tsconfig.build.json",
     "generate:test:types": "npm run build && node dist/generator/generateTypes.mjs tests/openapi3.yaml tests/types.d.ts",
@@ -74,11 +74,12 @@
     "husky": "^9.1.7",
     "jest": "^29.7.0",
     "pretty-quick": "^4.0.0",
-    "ts-jest": "^29.1.5",
     "typescript": "^5.4.5",
     "@map-colonies/tsconfig": "^1.0.0",
     "@map-colonies/infra-copilot-instructions": "^1.0.0",
     "@map-colonies/commitlint-config": "^1.0.0",
-    "typedoc": "^0.27.6"
+    "typedoc": "^0.27.6",
+    "@swc/core": "^1.7.26",
+    "@swc/jest": "^0.2.36"
   }
 }

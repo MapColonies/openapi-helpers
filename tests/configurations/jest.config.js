@@ -1,6 +1,6 @@
 module.exports = {
   transform: {
-    '^.+\\.ts$': ['ts-jest', { tsconfig: 'tsconfig.json' }],
+    '^.+\\.ts$': '@swc/jest',
   },
   coverageReporters: ['text', 'html'],
   collectCoverage: true,
@@ -18,7 +18,6 @@ module.exports = {
   //   ],
   // ],
   moduleDirectories: ['node_modules', 'src'],
-  preset: 'ts-jest',
   testEnvironment: 'node',
   coverageThreshold: {
     global: {
