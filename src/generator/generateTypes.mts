@@ -21,6 +21,11 @@ const {
 
 const [openapiPath, destinationPath] = positionals;
 
+if (openapiPath === undefined || destinationPath === undefined) {
+  console.error('Usage: generateTypes <openapiPath> <destinationPath>');
+  process.exit(1);
+}
+
 const ESLINT_DISABLE = '/* eslint-disable */\n';
 
 const typedRequestHandlerImport =
