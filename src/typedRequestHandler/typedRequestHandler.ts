@@ -1,3 +1,6 @@
+/**
+ * @module typedRequestHandler
+ */
 import type { RequestHandler } from 'express';
 import type { OptionalKeys } from 'ts-essentials';
 import type { ResponseObjectToFlat } from '../requestSender/types';
@@ -35,5 +38,33 @@ type PathHandlers<Paths extends PathsTemplate> = {
   [T in AllPathsAndMethodsUnion<Paths> as `${Uppercase<string & T['method']>} ${string & T['path']}`]: GenericRequestHandler<T['operation']>;
 };
 
+/**
+ * Represents a collection of request handlers that are typed based on the provided
+ * `Paths` and `Operations` templates generated from the openapi. This type combines both operation-specific
+ * handlers and path-specific handlers.
+ *
+ * @template Paths - A template that defines the structure of the paths.
+ * @template Operations - A template that defines the structure of the operations.
+ *
+ * @example
+ * ```typescript
+ * import type { TypedRequestHandlers } from './typedRequestHandler';
+ * import type { Paths, Operations } from './types';
+ * import express from 'express';
+ *
+ * const handlers: TypedRequestHandlers<Paths, Operations> = {
+ *   'GET /example': (req, res) => {
+ *     res.send({ message: 'Example GET handler' });
+ *   },
+ *   exampleOperation: (req, res) => {
+ *     res.send({ message: 'Example operation handler' });
+ *   },
+ * };
+ *
+ * const app = express();
+ * app.get('/example', handlers['GET /example']);
+ * app.post('/exampleOperation', handlers.exampleOperation);
+ * ```
+ */
 export type TypedRequestHandlers<Paths extends PathsTemplate, Operations extends OperationsTemplate> = OperationHandlers<Operations> &
   PathHandlers<Paths>;

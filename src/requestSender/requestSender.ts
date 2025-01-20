@@ -1,3 +1,6 @@
+/**
+ * @module requestSender
+ */
 import { readFileSync } from 'node:fs';
 import supertest from 'supertest';
 import type express from 'express';
@@ -98,6 +101,27 @@ export { RequestSender };
  * @param {string} openapiFilePath - The file path to the OpenAPI specification file.
  * @param {express.Application} app - The Express application instance.
  * @returns {Promise<RequestSender<Paths, Operations>>} A promise that resolves to a RequestSender object.
+ *
+ * @example
+ * ```typescript
+ * import express from 'express';
+ * import { createRequestSender } from './requestSender';
+ * import type { paths, operations } from './openapi';
+ *
+ * const app = express();
+ * const openapiFilePath = './openapi3.yaml';
+ *
+ * const requestSender = await createRequestSender<paths, operations>(openapiFilePath, app);
+ *
+ * // Using operation name
+ * const response1 = await requestSender.getUsers();
+ *
+ * // Using path and method
+ * const response2 = await requestSender.sendRequest({
+ *   method: 'get',
+ *   path: '/simple-request'
+ * });
+ * ```
  */
 export async function createRequestSender<Paths extends PathsTemplate = never, Operations extends OperationsTemplate = never>(
   openapiFilePath: Operations extends never ? never : string,
