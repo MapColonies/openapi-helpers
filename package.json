@@ -49,7 +49,7 @@
   },
   "homepage": "https://github.com/MapColonies/openapi-helpers#readme",
   "dependencies": {
-    "oas-normalize": "^11.1.1",
+    "oas-normalize": "^12.1.0",
     "ts-essentials": "^10.0.1",
     "yaml": "^2.5.0"
   },
