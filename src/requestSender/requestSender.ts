@@ -70,7 +70,7 @@ function getOperationsPathAndMethod<Paths extends PathsTemplate, Operations exte
 
     for (const method of methods) {
       if (pathObject[method] !== undefined) {
-        const operationId = pathObject[method]?.operationId;
+        const operationId = pathObject[method].operationId;
 
         /* istanbul ignore next */
         if (operationId === undefined) {
