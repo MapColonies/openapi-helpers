@@ -1,5 +1,32 @@
 # Changelog
 
+## [2.0.0](https://github.com/MapColonies/openapi-helpers/compare/v1.2.0...v2.0.0) (2025-02-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* specify Node.js engine version requirement in package.json
+
+### Features
+
+* add @map-colonies/tsconfig and update TypeScript configuration ([c862a8a](https://github.com/MapColonies/openapi-helpers/commit/c862a8a48bebd27bacf09a6563f85d3ed48bf4d1))
+* specify Node.js engine version requirement in package.json ([14ac047](https://github.com/MapColonies/openapi-helpers/commit/14ac04760add7ecbb9d93349f3d0306589089fe4))
+
+
+### Bug Fixes
+
+* removed unneeded optional chaining that caused lint error ([01822c6](https://github.com/MapColonies/openapi-helpers/commit/01822c663ce376ea7cec2e8d30e73d8c85ef1220))
+
+
+### Dependency Updates
+
+* bump ts-essentials from 10.0.1 to 10.0.4 in the patch group ([#13](https://github.com/MapColonies/openapi-helpers/issues/13)) ([3c6a78f](https://github.com/MapColonies/openapi-helpers/commit/3c6a78f57c69cba531debac697f0f30b40c9ae02))
+
+
+### Code Refactoring
+
+* modernized ([c70f9ef](https://github.com/MapColonies/openapi-helpers/commit/c70f9ef9d851a0e489a98f949dad532cc576774c))
+
 ## [1.2.0](https://github.com/MapColonies/openapi-helpers/compare/v1.1.1...v1.2.0) (2024-10-01)
 
 
