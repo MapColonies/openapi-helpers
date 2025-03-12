@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import express from 'express';
 import { expectTypeOf } from 'expect-type';
 import bodyParser from 'body-parser';
@@ -91,7 +90,7 @@ describe('requestSender', () => {
         .toEqualTypeOf<{ name?: string | undefined } | undefined>();
     });
 
-    it('should have the entire query parameters object as required when there are both required and optional params ', async () => {
+    it('should have the entire query parameters object as required when there are both required and optional params', async () => {
       expect.assertions(1);
       expressApp.get('/request-with-mixed-query-parameters', (req, res) => {
         expect(req.query).toEqual({ name: 'John' });
