@@ -13,7 +13,6 @@ const {
   args: process.argv.slice(ARGS_SLICE),
   options: {
     format: { type: 'boolean', alias: 'f' },
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     'add-typed-request-handler': { type: 'boolean', alias: 't' },
   },
   allowPositionals: true,

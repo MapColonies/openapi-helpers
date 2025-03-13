@@ -1,4 +1,4 @@
-/* eslint-disable import/exports-last */
+/* eslint-disable import-x/exports-last */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { OmitProperties, OptionalKeys, Prettify, RequiredKeys } from 'ts-essentials';
 import type * as supertest from 'supertest';

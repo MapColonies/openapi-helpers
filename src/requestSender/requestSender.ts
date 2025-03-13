@@ -4,7 +4,7 @@
 import { readFileSync } from 'node:fs';
 import supertest from 'supertest';
 import type express from 'express';
-import OASNormalize from 'oas-normalize';
+import oasNormalize from 'oas-normalize';
 import type { OmitProperties } from 'ts-essentials';
 import type { OpenAPIV3 } from 'openapi-types';
 import { PathsTemplate, Methods, OperationsTemplate } from '../common/types';
@@ -51,7 +51,7 @@ function sendRequest<
 const methods = ['get', 'post', 'put', 'delete', 'patch', 'head', 'options', 'trace'] as const;
 
 function getOperationsPathAndMethod<Paths extends PathsTemplate, Operations extends OperationsTemplate>(
-  openapi: Awaited<ReturnType<OASNormalize['deref']>>
+  openapi: Awaited<ReturnType<oasNormalize['deref']>>
 ): Record<OperationsNames<Operations>, { path: keyof Paths; method: Methods }> {
   const result = {} as Record<OperationsNames<Operations>, { path: string; method: string }>;
 
@@ -128,12 +128,12 @@ export async function createRequestSender<Paths extends PathsTemplate = never, O
   app: express.Application
 ): Promise<RequestSender<Paths, Operations>> {
   const fileContent = readFileSync(openapiFilePath, 'utf-8');
-  const normalized = new OASNormalize(fileContent);
+  const normalized = new oasNormalize(fileContent);
   const derefed = await normalized.deref();
   const operationsPathAndMethod = getOperationsPathAndMethod(derefed);
 
   const returnObj = {
-    // eslint-disable-next-line @typescript-eslint/promise-function-async
+    // eslint-disable-next-line @typescript-eslint/promise-function-async, @typescript-eslint/explicit-function-return-type
     sendRequest: <Path extends keyof Paths, Method extends keyof OmitProperties<Omit<Paths[Path], 'parameters'>, undefined>>(
       options: PathRequestOptions<Paths, Path, Method>
     ) => sendRequest(app, options),
