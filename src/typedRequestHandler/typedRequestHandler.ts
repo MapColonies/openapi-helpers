@@ -2,9 +2,17 @@
  * @module typedRequestHandler
  */
 import type { RequestHandler } from 'express';
-import type { OptionalKeys } from 'ts-essentials';
+import type { OptionalKeys, ReadonlyKeys } from 'ts-essentials';
 import type { ResponseObjectToFlat } from '../requestSender/types';
 import type { OperationsTemplate, PathsTemplate } from '../common/types';
+
+type a = ReadonlyKeys<{
+  c: {
+    readonly a: string;
+  };
+  b: string;
+  readonly a: string;
+}>;
 
 // The types only work with any, so we need to disable the eslint rule
 // It doesn't affect the resulting types as its only used for the condition

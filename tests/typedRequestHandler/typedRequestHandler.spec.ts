@@ -36,4 +36,16 @@ describe('typedRequestHandler', () => {
       expectTypeOf(res.json).parameter(0).toEqualTypeOf<operations['simpleRequest']['responses']['200']['content']['application/json'] | undefined>();
     };
   });
+
+  it('should remove readonly properties from the request body', () => {
+    const handler: MyHandlers['POST /read-only-property-body'] = (req, res) => {
+      expectTypeOf(req.body).not.toHaveProperty('readOnlyProperty');
+    };
+  });
+
+  it('should remove writeonly properties from the response', () => {
+    const handler: MyHandlers['POST /write-only-property-body'] = (req, res) => {
+      expectTypeOf(res.json).parameter(0).toEqualTypeOf<Omit<operations['writeOnlyPropertyBody']['responses']['201']['content']['application/json'], 'writeOnlyProperty'> | undefined>();
+    };
+  }
 });

@@ -312,3 +312,61 @@ paths:
                   message:
                     type: string
                     example: Hello, World!
+  /read-only-property-body:
+    post:
+      operationId: readOnlyPropertyBody
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                readOnlyProperty:
+                  type: string
+                  readOnly: true
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Hello, World!
+                  readOnlyProperty:
+                    type: string
+                    example: This is a read-only property
+  /write-only-property-body:
+    post:
+      operationId: writeOnlyPropertyBody
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                writeOnlyProperty:
+                  type: string
+                  writeOnly: true
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Hello, World!
+                  writeOnlyProperty:
+                    type: string
+                    example: This is a write-only property
