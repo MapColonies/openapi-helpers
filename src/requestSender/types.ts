@@ -4,6 +4,19 @@ import type { OmitProperties, OptionalKeys, Prettify, RequiredKeys } from 'ts-es
 import type * as supertest from 'supertest';
 import type { AddIfNotNever, OperationsTemplate, PathsTemplate, PickWritable } from '../common/types';
 
+/**
+ * Configuration options for the request sender.
+ *
+ * @interface RequestSenderOptions
+ */
+export interface RequestSenderOptions {
+  /**
+   * Base URL to prepend to all request paths.
+   * @type {string}
+   */
+  baseUrl?: string;
+}
+
 interface Headers {
   headers?: Record<string, string>;
 }
