@@ -8,15 +8,19 @@ import oasNormalize from 'oas-normalize';
 import type { OmitProperties } from 'ts-essentials';
 import type { OpenAPIV3 } from 'openapi-types';
 import { PathsTemplate, Methods, OperationsTemplate } from '../common/types';
-import type { PathRequestOptions, RequestOptions, OperationsNames, RequestSender, RequestReturn } from './types';
+import type { PathRequestOptions, RequestOptions, OperationsNames, RequestSender, RequestReturn, RequestSenderOptions } from './types';
 
 function sendRequest<
   Paths extends PathsTemplate,
   Path extends keyof Paths,
   Method extends keyof OmitProperties<Omit<Paths[Path], 'parameters'>, undefined>,
->(app: express.Application, options: PathRequestOptions<Paths, Path, Method>): RequestReturn<Paths[Path][Method]> {
+>(
+  app: express.Application,
+  options: PathRequestOptions<Paths, Path, Method>,
+  internalOptions: RequestSenderOptions = {}
+): RequestReturn<Paths[Path][Method]> {
   const method = options.method as Methods;
-  let actualPath = options.path as string;
+  let actualPath = (internalOptions.baseUrl ?? '') + (options.path as string);
 
   if ('pathParams' in options && options.pathParams !== undefined) {
     actualPath = Object.entries(options.pathParams).reduce((acc, [key, value]) => acc.replace(`{${key}}`, value as string), actualPath);
@@ -100,6 +104,7 @@ export { RequestSender };
  * @template Operations - The type representing the operations defined in the OpenAPI specification.
  * @param {string} openapiFilePath - The file path to the OpenAPI specification file.
  * @param {express.Application} app - The Express application instance.
+ * @param {RequestSenderOptions} [options] - Optional configuration options for the request sender.
  * @returns {Promise<RequestSender<Paths, Operations>>} A promise that resolves to a RequestSender object.
  *
  * @example
@@ -125,25 +130,27 @@ export { RequestSender };
  */
 export async function createRequestSender<Paths extends PathsTemplate = never, Operations extends OperationsTemplate = never>(
   openapiFilePath: Operations extends never ? never : string,
-  app: express.Application
+  app: express.Application,
+  options: RequestSenderOptions = {}
 ): Promise<RequestSender<Paths, Operations>> {
   const fileContent = readFileSync(openapiFilePath, 'utf-8');
   const normalized = new oasNormalize(fileContent);
   const derefed = await normalized.deref();
   const operationsPathAndMethod = getOperationsPathAndMethod(derefed);
+  const baseOptions = options;
 
   const returnObj = {
     // eslint-disable-next-line @typescript-eslint/promise-function-async, @typescript-eslint/explicit-function-return-type
     sendRequest: <Path extends keyof Paths, Method extends keyof OmitProperties<Omit<Paths[Path], 'parameters'>, undefined>>(
       options: PathRequestOptions<Paths, Path, Method>
-    ) => sendRequest(app, options),
+    ) => sendRequest(app, options, baseOptions),
   };
 
   for (const [operation, { path, method }] of Object.entries(operationsPathAndMethod)) {
     // @ts-expect-error as we iterate over all the operations, the operationId is always defined
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     returnObj[operation] = async (options: RequestOptions<T['operations'][keyof T['operations']]>) =>
-      sendRequest(app, { path, method: method as 'get', ...options });
+      sendRequest(app, { path, method: method as 'get', ...options }, baseOptions);
   }
 
   return returnObj as RequestSender<Paths, Operations>;

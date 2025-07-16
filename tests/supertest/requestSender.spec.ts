@@ -32,6 +32,19 @@ describe('requestSender', () => {
       expectTypeOf(requestSender.simpleRequest).parameter(1).toBeUndefined();
     });
 
+    it('should work with a custom base URL', async () => {
+      expect.assertions(2);
+      expressApp.get('/api/simple-request', (req, res) => {
+        expect(req.query).toEqual({});
+        res.json({ message: 'Hello, World!' });
+      });
+      const customRequestSender = await createRequestSender<paths, operations>('tests/openapi3.yaml', expressApp, {
+        baseUrl: '/api',
+      });
+      const res = await customRequestSender.simpleRequest();
+      expect(res).toHaveProperty('body', { message: 'Hello, World!' });
+    });
+
     it('should allow to add headers to the request even when none are required', async () => {
       expect.assertions(1);
       expressApp.get('/simple-request', (req, res) => {
@@ -236,6 +249,21 @@ describe('requestSender', () => {
 
     it('should only suggest the paths present in the openapi definition', () => {
       expectTypeOf(requestSender.sendRequest).parameter(0).toMatchTypeOf<{ path: keyof paths }>();
+    });
+
+    it('should support baseUrl in the options', async () => {
+      expect.assertions(2);
+      expressApp.get('/api/simple-request', (req, res) => {
+        expect(req.query).toEqual({});
+        res.json({ message: 'Hello, World!' });
+      });
+
+      const requestSender = await createRequestSender<paths, operations>('tests/openapi3.yaml', expressApp, {
+        baseUrl: '/api',
+      });
+
+      const res = await requestSender.sendRequest({ method: 'get', path: '/simple-request' });
+      expect(res).toHaveProperty('body', { message: 'Hello, World!' });
     });
   });
 });
