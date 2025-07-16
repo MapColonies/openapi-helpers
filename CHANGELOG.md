@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/MapColonies/openapi-helpers/compare/v2.0.0...v2.1.0) (2025-07-16)
+
+
+### Features
+
+* added baseUrl option ([#42](https://github.com/MapColonies/openapi-helpers/issues/42)) ([60936c3](https://github.com/MapColonies/openapi-helpers/commit/60936c356b0ddbb233fd1cfb1f561edb1347dc64))
+
 ## [2.0.0](https://github.com/MapColonies/openapi-helpers/compare/v1.2.0...v2.0.0) (2025-02-03)
 
 
