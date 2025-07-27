@@ -28,7 +28,7 @@ describe('requestSender', () => {
 
       expect(res).toHaveProperty('status', 200);
       expectTypeOf(res.body).toEqualTypeOf<operations['simpleRequest']['responses']['200']['content']['application/json']>();
-      expectTypeOf(requestSender.simpleRequest).parameter(0).toMatchTypeOf<object | undefined>();
+      expectTypeOf(requestSender.simpleRequest).parameter(0).toExtend<object | undefined>();
       expectTypeOf(requestSender.simpleRequest).parameter(1).toBeUndefined();
     });
 
@@ -248,7 +248,7 @@ describe('requestSender', () => {
     });
 
     it('should only suggest the paths present in the openapi definition', () => {
-      expectTypeOf(requestSender.sendRequest).parameter(0).toMatchTypeOf<{ path: keyof paths }>();
+      expectTypeOf<Parameters<typeof requestSender.sendRequest>[0]['path']>().toEqualTypeOf<keyof paths>();
     });
 
     it('should support baseUrl in the options', async () => {
