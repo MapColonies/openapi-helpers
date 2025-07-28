@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/MapColonies/openapi-helpers/compare/v2.1.0...v3.0.0) (2025-07-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade packages and engine ([#44](https://github.com/MapColonies/openapi-helpers/issues/44))
+
+### Build System
+
+* upgrade packages and engine ([#44](https://github.com/MapColonies/openapi-helpers/issues/44)) ([33af8c2](https://github.com/MapColonies/openapi-helpers/commit/33af8c2bbd0a6dcf9d3ae934a3b0baccd5dbddb7))
+
 ## [2.1.0](https://github.com/MapColonies/openapi-helpers/compare/v2.0.0...v2.1.0) (2025-07-16)
 
 
