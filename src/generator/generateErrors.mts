@@ -7,7 +7,6 @@ import * as changeCase from 'change-case';
 import type { OpenAPI3, OperationObject, ResponseObject, SchemaObject } from 'openapi-typescript';
 
 const ARGS_SLICE = 2;
-const ESLINT_DISABLE = '/* eslint-disable */\n';
 
 const {
   values: { format: shouldFormat },
@@ -117,8 +116,6 @@ if (errorCodes.size === 0) {
 }
 
 let errorFile = errorCodes.values().map(createError).toArray().join('\n');
-
-errorFile = ESLINT_DISABLE + errorFile;
 
 if (shouldFormat === true) {
   const prettierOptions = await resolveConfig('./src/index.ts');
