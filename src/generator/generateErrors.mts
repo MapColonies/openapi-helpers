@@ -1,11 +1,13 @@
 import fs from 'node:fs/promises';
 import { parseArgs } from 'node:util';
+import path from 'node:path';
 import { dereference } from '@apidevtools/json-schema-ref-parser';
 import { format, resolveConfig } from 'prettier';
 import * as changeCase from 'change-case';
 import type { OpenAPI3, OperationObject, ResponseObject, SchemaObject } from 'openapi-typescript';
 
 const ARGS_SLICE = 2;
+const ESLINT_DISABLE = '/* eslint-disable */\n';
 
 const {
   values: { format: shouldFormat },
@@ -116,10 +118,15 @@ if (errorCodes.size === 0) {
 
 let errorFile = errorCodes.values().map(createError).toArray().join('\n');
 
+errorFile = ESLINT_DISABLE + errorFile;
+
 if (shouldFormat === true) {
   const prettierOptions = await resolveConfig('./src/index.ts');
 
   errorFile = await format(errorFile, { ...prettierOptions, parser: 'typescript' });
 }
+
+const directory = path.dirname(destinationPath);
+await fs.mkdir(directory, { recursive: true });
 
 await fs.writeFile(destinationPath, errorFile);
