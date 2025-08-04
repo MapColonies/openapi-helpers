@@ -49,6 +49,8 @@
   },
   "homepage": "https://github.com/MapColonies/openapi-helpers#readme",
   "dependencies": {
+    "@apidevtools/json-schema-ref-parser": "^14.1.1",
+    "change-case": "^5.4.4",
     "oas-normalize": "^14.1.2",
     "ts-essentials": "^10.1.1",
     "yaml": "^2.8.0"
