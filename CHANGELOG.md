@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/MapColonies/openapi-helpers/compare/v3.0.0...v3.1.0) (2025-08-07)
+
+
+### Features
+
+* add generateErrors script and update dependencies (MAPCO-8468) ([#47](https://github.com/MapColonies/openapi-helpers/issues/47)) ([00855d2](https://github.com/MapColonies/openapi-helpers/commit/00855d227428a7b55a0af9f48f55d2bbb97b0b8e))
+
 ## [3.0.0](https://github.com/MapColonies/openapi-helpers/compare/v2.1.0...v3.0.0) (2025-07-27)
 
 
