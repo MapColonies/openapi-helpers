@@ -10,9 +10,13 @@
     "./typedRequestHandler": {
       "default": "./dist/typedRequestHandler/typedRequestHandler.js",
       "types": "./dist/typedRequestHandler/typedRequestHandler.d.ts"
+    },
+    "./generators": {
+      "import": "./dist/generator/index.mjs",
+      "types": "./dist/generator/index.d.mts"
     }
   },
-  "bin": "./dist/generator/generateTypes.mjs",
+  "bin": "./dist/cli/entrypoint.mjs",
   "scripts": {
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
@@ -51,6 +55,7 @@
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^14.1.1",
     "change-case": "^5.4.4",
+    "commander": "^14.0.0",
     "oas-normalize": "^14.1.2",
     "ts-essentials": "^10.1.1",
     "yaml": "^2.8.0"
