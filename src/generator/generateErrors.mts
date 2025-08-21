@@ -40,15 +40,12 @@ function buildErrorMapping(errorCodes: Set<string>): string {
 export async function generateErrors(
   openapiPath: string,
   destinationPath: string,
-  shouldFormat: boolean,
-  includeMapping?: boolean,
-  includeErrorClasses?: boolean
-): Promise<void> {
-  if (includeMapping !== true && includeErrorClasses !== true) {
-    console.error('No mapping and no error classes generation is enabled. Exiting...');
-    process.exit(1);
+  options: {
+    shouldFormat?: boolean;
+    includeMapping?: boolean;
+    includeErrorClasses?: boolean;
   }
-
+): Promise<void> {
   const openapi = await dereference<OpenAPI3>(openapiPath);
 
   if (openapi.paths === undefined) {
@@ -118,15 +115,15 @@ export async function generateErrors(
   }
   let errorFile = FILE_HEADER;
 
-  if (includeErrorClasses === true) {
+  if (options.includeErrorClasses === true) {
     errorFile += errorCodes.values().map(createError).toArray().join('\n');
   }
 
-  if (includeMapping === true) {
+  if (options.includeMapping === true) {
     errorFile += ` export const API_ERRORS_MAP = { ${buildErrorMapping(errorCodes)} } as const;\n`;
   }
 
-  if (shouldFormat) {
+  if (options.shouldFormat === true) {
     const prettierOptions = await resolveConfig('./src/index.ts');
     errorFile = await format(errorFile, { ...prettierOptions, parser: 'typescript' });
   }

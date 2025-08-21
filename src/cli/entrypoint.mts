@@ -35,7 +35,7 @@ command
     ) => {
       try {
         const spinner = ora('Generating types').start();
-        await generateTypes(openapiPath, destinationPath, options.format === true, options.addTypedRequestHandler === true);
+        await generateTypes(openapiPath, destinationPath, { shouldFormat: options.format, addTypedRequestHandler: options.addTypedRequestHandler });
         await sleep(SECOND);
         spinner.stop();
         console.log('Types generated successfully');
@@ -63,9 +63,16 @@ command
       const includeErrorClasses = options.errorsOutput === 'classes' || options.errorsOutput === 'all';
 
       const spinner = ora('Generating errors').start();
-      await generateErrors(openapiPath, destinationPath, options.format === true, includeMapping, includeErrorClasses);
+
+      await generateErrors(openapiPath, destinationPath, {
+        shouldFormat: options.format,
+        includeMapping,
+        includeErrorClasses,
+      });
+
       await sleep(SECOND);
       spinner.stop();
+
       console.log('Errors generated successfully');
     } catch (error) {
       console.error('Error generating errors:', error);

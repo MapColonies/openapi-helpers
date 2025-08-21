@@ -15,22 +15,24 @@ const exportTypedRequestHandlers = 'export type TypedRequestHandlers = ImportedT
 export async function generateTypes(
   openapiPath: string,
   destinationPath: string,
-  shouldFormat: boolean,
-  addTypedRequestHandler: boolean,
-  inject?: string,
-  transform?: (schemaObject: SchemaObject, metadata: TransformNodeOptions) => TypeNode | TransformObject | undefined
+  options: {
+    shouldFormat?: boolean;
+    addTypedRequestHandler?: boolean;
+    inject?: string;
+    transform?: (schemaObject: SchemaObject, metadata: TransformNodeOptions) => TypeNode | TransformObject | undefined;
+  }
 ): Promise<void> {
-  const ast = await openapiTS(await fs.readFile(openapiPath, 'utf-8'), { exportType: true, inject, transform });
+  const ast = await openapiTS(await fs.readFile(openapiPath, 'utf-8'), { exportType: true, inject: options.inject, transform: options.transform });
 
   let content = astToString(ast);
 
-  if (addTypedRequestHandler) {
+  if (options.addTypedRequestHandler === true) {
     content = typedRequestHandlerImport + content + exportTypedRequestHandlers;
   }
 
   content = FILE_HEADER + content;
 
-  if (shouldFormat) {
+  if (options.shouldFormat === true) {
     const prettierOptions = await resolveConfig('./src/index.ts');
 
     content = await format(content, { ...prettierOptions, parser: 'typescript' });

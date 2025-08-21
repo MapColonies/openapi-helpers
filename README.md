@@ -42,10 +42,13 @@ For example:
 npx @map-colonies/openapi-helpers generate errors ./openapi3.yaml ./src/errors.ts --format
 ```
 
+
 Options:
 - `--format` - Format the generated code using `prettier`.
-- `--no-mapping` - Disable the generation of error code mappings.
-- `--no-error-classes` - Disable the generation of error classes.
+- `--errors-output <all|map|classes>` - Specify what to generate:
+  - `all` (default): generate both error classes and error code mapping
+  - `map`: generate only the error code mapping
+  - `classes`: generate only the error classes
 
 ### Help and Examples
 
@@ -57,12 +60,13 @@ npx @map-colonies/openapi-helpers generate types --help
 npx @map-colonies/openapi-helpers generate errors --help
 ```
 
+
 #### Example: Run all generations
 
 You can run both types and errors generation in sequence:
 ```bash
 npx @map-colonies/openapi-helpers generate types ./openapi3.yaml ./src/openapi.d.ts --format --add-typed-request-handler
-npx @map-colonies/openapi-helpers generate errors ./openapi3.yaml ./src/errors.ts --format
+npx @map-colonies/openapi-helpers generate errors ./openapi3.yaml ./src/errors.ts --format --errors-output all
 ```
 
 
@@ -73,6 +77,7 @@ The code generators (`generateTypes.mts` and `generateErrors.mts`) now support f
 
 ### Programmatic Usage
 
+
 You can import and use the generators directly in your own scripts for full functional programming flexibility:
 
 ```typescript
@@ -82,19 +87,23 @@ import { generateTypes, generateErrors } from '@map-colonies/openapi-helpers/gen
 await generateTypes(
   'openapi3.yaml',
   'src/openapi.d.ts',
-  true, // shouldFormat
-  true, // addTypedRequestHandler
-  /* inject? */ undefined,
-  /* transform? */ undefined // or provide a custom transform function
+  {
+    shouldFormat: true,
+    addTypedRequestHandler: true,
+    // inject?: string,
+    // transform?: (schemaObject, metadata) => ...
+  }
 );
 
 // Generate errors
 await generateErrors(
   'openapi3.yaml',
   'src/errors.ts',
-  true, // shouldFormat
-  true, // includeMapping
-  true  // includeErrorClasses
+  {
+    shouldFormat: true,
+    includeMapping: true,
+    includeErrorClasses: true
+  }
 );
 ```
 
