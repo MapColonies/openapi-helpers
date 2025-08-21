@@ -5,6 +5,13 @@ import { generateTypes } from '../generator/generateTypes.mjs';
 import { generateErrors } from '../generator/generateErrors.mjs';
 import ora from 'ora';
 
+const errorOutput = ['all', 'map', 'classes'] as const;
+type ErrorsOutput = (typeof errorOutput)[number];
+
+function isErrorsOutput(value: string): value is ErrorsOutput {
+  return errorOutput.includes(value as ErrorsOutput);
+}
+
 const SECOND = 1000;
 program.name('openapi-helpers').description('Generate TypeScript types and error classes from OpenAPI specifications').version('3.1.0');
 
@@ -45,12 +52,18 @@ command
   .argument('<openapiPath>', 'Path to the OpenAPI specification file')
   .argument('<destinationPath>', 'Path where the generated error classes will be saved')
   .option('-f, --format', 'Format the generated code using Prettier')
-  .option('-m, --no-mapping', 'Disable the generation of error code mappings')
-  .option('-e, --no-error-classes', 'Disable the generation of error classes')
+  .option('-e, --errors-output <all|map|classes>', 'Specify the errors output type', 'all')
   .action(async (openapiPath: string, destinationPath: string, options) => {
     try {
+      if (!isErrorsOutput(options.errorsOutput)) {
+        console.error(`Invalid errors output type: ${options.errorsOutput}`);
+        process.exit(1);
+      }
+      const includeMapping = options.errorsOutput === 'map' || options.errorsOutput === 'all';
+      const includeErrorClasses = options.errorsOutput === 'classes' || options.errorsOutput === 'all';
+
       const spinner = ora('Generating errors').start();
-      await generateErrors(openapiPath, destinationPath, options.format === true, options.mapping, options.errorClasses);
+      await generateErrors(openapiPath, destinationPath, options.format === true, includeMapping, includeErrorClasses);
       await sleep(SECOND);
       spinner.stop();
       console.log('Errors generated successfully');
