@@ -5,7 +5,50 @@ import { format, resolveConfig } from 'prettier';
 import * as changeCase from 'change-case';
 import type { OpenAPI3, OperationObject, ResponseObject, SchemaObject } from 'openapi-typescript';
 
-export async function generateErrors(openapiPath: string, destinationPath: string, shouldFormat: boolean): Promise<void> {
+const ESLINT_DISABLE = '/* eslint-disable */\n';
+const FILE_HEADER = `${ESLINT_DISABLE}// This file was auto-generated. Do not edit manually.
+// To update, run the error generation script again.\n\n`;
+
+function createError(code: string): string {
+  let className = changeCase.pascalCase(code);
+
+  if (!className.endsWith('Error')) {
+    className += 'Error';
+  }
+
+  return `export class ${className} extends Error {
+  public readonly code = '${code}';
+  /**
+   * Creates an instance of ${className}.
+   * @param message - The error message.
+   * @param cause - Optional original error or server response data.
+   */
+  public constructor(message: string, cause?: unknown) {
+    super(message, { cause });
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+};\n`;
+}
+
+function buildErrorMapping(errorCodes: Set<string>): string {
+  return errorCodes
+    .values()
+    .map((code) => `'${code}': '${code}'`)
+    .reduce((acc, curr) => `${acc}, ${curr}`);
+}
+
+export async function generateErrors(
+  openapiPath: string,
+  destinationPath: string,
+  shouldFormat: boolean,
+  includeMapping?: boolean,
+  includeErrorClasses?: boolean
+): Promise<void> {
+  if (includeMapping !== true && includeErrorClasses !== true) {
+    console.error('No mapping and no error classes generation is enabled. Exiting...');
+    process.exit(1);
+  }
+
   const openapi = await dereference<OpenAPI3>(openapiPath);
 
   if (openapi.paths === undefined) {
@@ -50,27 +93,6 @@ export async function generateErrors(openapiPath: string, destinationPath: strin
     }
   }
 
-  function createError(code: string): string {
-    let className = changeCase.pascalCase(code);
-
-    if (!className.endsWith('Error')) {
-      className += 'Error';
-    }
-
-    return `export class ${className} extends Error {
-  public readonly code = '${code}';
-  /**
-   * Creates an instance of ${className}.
-   * @param message - The error message.
-   * @param cause - Optional original error or server response data.
-   */
-  public constructor(message: string, cause?: unknown) {
-    super(message, { cause });
-    Object.setPrototypeOf(this, new.target.prototype);
-  }
-};\n`;
-  }
-
   for (const [, methods] of Object.entries(openapi.paths)) {
     for (const [key, operation] of Object.entries(methods) as [string, OperationObject][]) {
       if (['servers', 'parameters'].includes(key)) {
@@ -94,8 +116,15 @@ export async function generateErrors(openapiPath: string, destinationPath: strin
     console.warn('No error codes found in the OpenAPI document.');
     process.exit(0);
   }
+  let errorFile = FILE_HEADER;
 
-  let errorFile = errorCodes.values().map(createError).toArray().join('\n');
+  if (includeErrorClasses === true) {
+    errorFile += errorCodes.values().map(createError).toArray().join('\n');
+  }
+
+  if (includeMapping === true) {
+    errorFile += ` export const API_ERRORS_MAP = { ${buildErrorMapping(errorCodes)} } as const;\n`;
+  }
 
   if (shouldFormat) {
     const prettierOptions = await resolveConfig('./src/index.ts');

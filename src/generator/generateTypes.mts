@@ -5,6 +5,8 @@ import openapiTS, { astToString, SchemaObject, TransformNodeOptions, TransformOb
 import { TypeNode } from 'typescript';
 
 const ESLINT_DISABLE = '/* eslint-disable */\n';
+const FILE_HEADER = `${ESLINT_DISABLE}// This file was auto-generated. Do not edit manually.
+// To update, run the error generation script again.\n\n`;
 
 const typedRequestHandlerImport =
   "import type { TypedRequestHandlers as ImportedTypedRequestHandlers } from '@map-colonies/openapi-helpers/typedRequestHandler';\n";
@@ -26,7 +28,7 @@ export async function generateTypes(
     content = typedRequestHandlerImport + content + exportTypedRequestHandlers;
   }
 
-  content = ESLINT_DISABLE + content;
+  content = FILE_HEADER + content;
 
   if (shouldFormat) {
     const prettierOptions = await resolveConfig('./src/index.ts');
