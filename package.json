@@ -30,6 +30,7 @@
     "generate:test:types": "npm run build && node dist/generator/generateTypes.mjs tests/openapi3.yaml tests/types.d.ts",
     "clean": "rimraf dist",
     "prepublish": "npm run build",
+    "prepack": "npm run build",
     "prepare": "husky",
     "docs": "typedoc"
   },
