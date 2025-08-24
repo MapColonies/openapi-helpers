@@ -73,8 +73,9 @@ npx @map-colonies/openapi-helpers generate errors ./openapi3.yaml ./src/errors.t
 
 ## Programmatic Support
 
-> **Note**
-> Programmatic usage of the CLI (importing and using the generators directly) is only supported in ECMAScript modules (ESM). CommonJS is not supported for direct imports.
+
+> [!NOTE]
+> **Programmatic usage of the CLI (importing and using the generators directly) is only supported in ECMAScript modules (ESM).** CommonJS is not supported for direct imports.
 
 The code generators (`generateTypes.mts` and `generateErrors.mts`) now support functional programming patterns. You can inject custom transformation logic or AST manipulation by providing functional arguments, making the generators more flexible and composable for advanced use cases.
 
