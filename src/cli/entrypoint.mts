@@ -4,6 +4,7 @@ import { program } from '@commander-js/extra-typings';
 import { generateTypes } from '../generator/generateTypes.mjs';
 import { generateErrors } from '../generator/generateErrors.mjs';
 import ora from 'ora';
+import { PACKAGE_VERSION } from '../common/constants.js';
 
 const errorOutput = ['all', 'map', 'classes'] as const;
 type ErrorsOutput = (typeof errorOutput)[number];
@@ -13,7 +14,7 @@ function isErrorsOutput(value: string): value is ErrorsOutput {
 }
 
 const SECOND = 1000;
-program.name('openapi-helpers').description('Generate TypeScript types and error classes from OpenAPI specifications').version('3.1.0');
+program.name('openapi-helpers').description('Generate TypeScript types and error classes from OpenAPI specifications').version(PACKAGE_VERSION);
 
 const command = program.command('generate').description('Generate code artifacts (types, error classes) from OpenAPI specifications');
 
