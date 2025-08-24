@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0](https://github.com/MapColonies/openapi-helpers/compare/v3.1.0...v4.0.0) (2025-08-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* unified CLI  generating TypeScript types and error classes from OpenAPI specifications (MAPCO-8469) ([#49](https://github.com/MapColonies/openapi-helpers/issues/49))
+
+### Features
+
+* unified CLI  generating TypeScript types and error classes from OpenAPI specifications (MAPCO-8469) ([#49](https://github.com/MapColonies/openapi-helpers/issues/49)) ([effbcca](https://github.com/MapColonies/openapi-helpers/commit/effbcca5354baffcd227720c7b6d0d1c45234d77))
+
 ## [3.1.0](https://github.com/MapColonies/openapi-helpers/compare/v3.0.0...v3.1.0) (2025-08-07)
 
 
