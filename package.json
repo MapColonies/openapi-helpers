@@ -10,9 +10,13 @@
     "./typedRequestHandler": {
       "default": "./dist/typedRequestHandler/typedRequestHandler.js",
       "types": "./dist/typedRequestHandler/typedRequestHandler.d.ts"
+    },
+    "./generators": {
+      "import": "./dist/generator/index.mjs",
+      "types": "./dist/generator/index.d.mts"
     }
   },
-  "bin": "./dist/generator/generateTypes.mjs",
+  "bin": "./dist/cli/entrypoint.mjs",
   "scripts": {
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
@@ -26,6 +30,7 @@
     "generate:test:types": "npm run build && node dist/generator/generateTypes.mjs tests/openapi3.yaml tests/types.d.ts",
     "clean": "rimraf dist",
     "prepublish": "npm run build",
+    "prepack": "npm run build",
     "prepare": "husky",
     "docs": "typedoc"
   },
@@ -50,8 +55,12 @@
   "homepage": "https://github.com/MapColonies/openapi-helpers#readme",
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^14.1.1",
+    "@commander-js/extra-typings": "^14.0.0",
+    "@map-colonies/read-pkg": "^1.0.0",
     "change-case": "^5.4.4",
+    "commander": "^14.0.0",
     "oas-normalize": "^14.1.2",
+    "ora": "^8.2.0",
     "ts-essentials": "^10.1.1",
     "yaml": "^2.8.0"
   },
