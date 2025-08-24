@@ -36,7 +36,10 @@ function buildErrorMapping(errorCodes: Set<string>): string {
     .map((code) => `'${code}': '${code}'`)
     .reduce((acc, curr) => `${acc}, ${curr}`);
 }
-
+  return Array.from(errorCodes)
+    .map((code) => `'${code}': '${code}'`)
+    .join(', ');
+}
 export async function generateErrors(
   openapiPath: string,
   destinationPath: string,
