@@ -14,6 +14,29 @@ npm install --save-dev @map-colonies/openapi-helpers supertest prettier openapi-
 
 The package provides a unified CLI for generating TypeScript types and error classes from OpenAPI specifications. All code generation is now performed using the `generate` command, which supports subcommands for types and errors.
 
+#### CLI Arguments Reference
+
+**Positional Arguments:**
+For both `generate types` and `generate errors` commands, the positional arguments are:
+
+- `<openapi-file>`: Path to the OpenAPI YAML or JSON file to use as the source schema.
+- `<output-file>`: Path to the file where the generated code will be written.
+
+These arguments are required and must be provided in the order shown.
+
+**Optional Arguments:**
+
+For `generate types`:
+- `-f, --format`: Format the generated types using Prettier
+- `-t, --add-typed-request-handler`: Add the TypedRequestHandler type to the generated types
+
+For `generate errors`:
+- `-f, --format`: Format the generated code using Prettier  
+- `-e, --errors-output <all|map|classes>`: Specify what to generate (default: all)
+  - `all`: generate both error classes and error code mapping
+  - `map`: generate only the error code mapping
+  - `classes`: generate only the error classes
+
 ### Generate Types
 
 Generate TypeScript types from an OpenAPI schema:
@@ -27,8 +50,8 @@ npx @map-colonies/openapi-helpers generate types ./openapi3.yaml ./src/openapi.d
 ```
 
 Options:
-- `--format` - Format the generated types using `prettier`.
-- `--add-typed-request-handler` - Add the `TypedRequestHandler` type to the generated types.
+- `-f, --format` - Format the generated types using `prettier`.
+- `-t, --add-typed-request-handler` - Add the `TypedRequestHandler` type to the generated types.
 
 ### Generate Errors
 
@@ -44,8 +67,8 @@ npx @map-colonies/openapi-helpers generate errors ./openapi3.yaml ./src/errors.t
 
 
 Options:
-- `--format` - Format the generated code using `prettier`.
-- `--errors-output <all|map|classes>` - Specify what to generate:
+- `-f, --format` - Format the generated code using `prettier`.
+- `-e, --errors-output <all|map|classes>` - Specify what to generate:
   - `all` (default): generate both error classes and error code mapping
   - `map`: generate only the error code mapping
   - `classes`: generate only the error classes
