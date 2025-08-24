@@ -71,11 +71,11 @@ npx @map-colonies/openapi-helpers generate errors ./openapi3.yaml ./src/errors.t
 
 
 
-## Functional Programming Support
+## Programmatic Support
 
 The code generators (`generateTypes.mts` and `generateErrors.mts`) now support functional programming patterns. You can inject custom transformation logic or AST manipulation by providing functional arguments, making the generators more flexible and composable for advanced use cases.
 
-### Programmatic Usage
+### API Usage
 
 
 You can import and use the generators directly in your own scripts for full functional programming flexibility:
